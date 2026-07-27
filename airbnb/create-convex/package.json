@@ -1,0 +1,50 @@
+{
+  "name": "create-convex",
+  "version": "0.0.46",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Convex, Inc. <team@convex.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/get-convex/templates.git",
+    "directory": "create-convex"
+  },
+  "homepage": "https://convex.dev",
+  "bin": {
+    "create-convex": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template-*",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --typecheck",
+    "dev:test": "vitest --typecheck",
+    "prepublishOnly": "npm run build",
+    "prepack": "node dont-publish-alpha-as-latest.cjs",
+    "lint": "echo ESLint is not configured",
+    "dev:run": "node ./dist/index.mjs",
+    "prepare": "patch-package"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/minimist": "^1.2.5",
+    "@types/prompts": "^2.4.9",
+    "cross-spawn": "^7.0.6",
+    "degit": "^3.6.1",
+    "kolorist": "^1.8.0",
+    "minimist": "^1.2.8",
+    "patch-package": "^8.0.1",
+    "prettier": "^3.8.3",
+    "prompts": "^2.4.2",
+    "unbuild": "^3.6.1",
+    "vitest": "^4.1.4"
+  }
+}
