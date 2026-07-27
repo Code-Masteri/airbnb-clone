@@ -1,0 +1,41 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended"],
+  timezone: "America/Los_Angeles",
+  minimumReleaseAge: "7 days",
+  ignorePaths: [
+    "template-nextjs-clerk-shadcn/**",
+    "template-nextjs-lucia-shadcn/**",
+    "template-nextjs-convexauth-shadcn/**",
+    "template-nextjs-shadcn/**",
+    "template-react-vite-clerk-shadcn/**",
+    "template-react-vite-convexauth-shadcn/**",
+    "template-react-vite-shadcn/**",
+  ],
+  packageRules: [
+    {
+      groupName: "Routine updates",
+      matchUpdateTypes: ["minor", "patch", "pin", "digest"],
+      prConcurrentLimit: 1,
+      automerge: true,
+    },
+    {
+      matchManagers: ["npm", "bun"],
+      rangeStrategy: "bump",
+    },
+    {
+      description:
+        "Update the Convex package in its own group, without the minimum release age delay, and automerge it. Its own group (and prConcurrentLimit) keeps it from being bottlenecked behind the single 'Routine updates' PR slot.",
+      groupName: "Convex",
+      matchPackageNames: ["convex"],
+      minimumReleaseAge: null,
+      automerge: true,
+      prConcurrentLimit: 5,
+    },
+    {
+      description: "Bypass minimum release age for other Convex packages",
+      matchPackageNames: ["@convex-dev/**"],
+      minimumReleaseAge: null,
+    },
+  ],
+}
