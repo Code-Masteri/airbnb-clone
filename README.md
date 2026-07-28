@@ -1,36 +1,342 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+#
 
-## Getting Started
+```
+ █████╗ ██╗██████╗ ██████╗ ███╗   ██╗██████╗
+██╔══██╗██║██╔══██╗██╔══██╗████╗  ██║██╔══██╗
+███████║██║██████╔╝██████╔╝██╔██╗ ██║██████╔╝
+██╔══██║██║██╔══██╗██╔══██╗██║╚██╗██║██╔══██╗
+██║  ██║██║██║  ██║██████╔╝██║ ╚████║██████╔╝
+╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═══╝╚═════╝
+```
 
-First, run the development server:
+> A full-stack Airbnb clone with real split payments, host payouts, and multi-tenant auth. Built to production standards — not a tutorial.
+
+![Next.js](https://img.shields.io/badge/Next.js_15-black?style=flat-square&logo=next.js)
+![Convex](https://img.shields.io/badge/Convex-EE342F?style=flat-square&logo=convex)
+![Clerk](https://img.shields.io/badge/Clerk-6C47FF?style=flat-square&logo=clerk)
+![Stripe](https://img.shields.io/badge/Stripe_Connect-635BFF?style=flat-square&logo=stripe)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=flat-square&logo=tailwind-css)
+![shadcn/ui](https://img.shields.io/badge/shadcn/ui-000?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript)
+
+---
+
+## What this actually is
+
+Most Airbnb clones stop at the UI. This one doesn't.
+
+Payments split automatically between the platform and the host via **Stripe Connect**. Hosts onboard through a Stripe Express flow and receive payouts directly to their bank accounts. The platform takes a configurable processing fee per booking — collected at checkout, distributed on payout. Auth is handled by **Clerk** with guest and host roles, OAuth, and session management out of the box. The backend runs entirely on **Convex** — reactive queries, real-time updates, and serverless functions with no cold starts and no database schema migrations to manage.
+
+Built with **Cursor** throughout.
+
+---
+
+## Tech stack
+
+| Layer              | Technology                        |
+| ------------------ | --------------------------------- |
+| Framework          | Next.js 15 (App Router)           |
+| Backend / Database | Convex                            |
+| Auth               | Clerk                             |
+| Payments           | Stripe Connect (Express accounts) |
+| Styling            | Tailwind CSS v4                   |
+| Components         | shadcn/ui                         |
+| Language           | TypeScript                        |
+| IDE                | Cursor                            |
+
+---
+
+## Core features
+
+- **Listing discovery** — search by location, dates, guest count, and category with real-time filtering
+- **Listing detail** — photo gallery, host info, availability calendar, and pricing breakdown
+- **Booking flow** — date selection, guest count, instant price calculation, and Stripe Checkout
+- **Split payments** — platform fee collected at checkout, remainder routed to host via Stripe Connect
+- **Host dashboard** — manage listings, view bookings, track payout history
+- **Host onboarding** — Stripe Express flow to connect bank account and enable payouts
+- **Guest dashboard** — upcoming trips, past bookings, and booking receipts
+- **Auth** — Clerk with Google OAuth, email/password, guest and host roles
+- **Real-time updates** — Convex reactive queries update the UI without polling
+- **Protected routes** — middleware guards for host-only and guest-only pages
+
+---
+
+## Project structure
+
+```
+airbnb/
+├── app/
+│   ├── (auth)/
+│   │   ├── sign-in/
+│   │   └── sign-up/
+│   ├── (root)/
+│   │   ├── page.tsx                  # Home / listing search
+│   │   ├── listings/
+│   │   │   ├── page.tsx              # Browse all listings
+│   │   │   └── [id]/
+│   │   │       └── page.tsx          # Listing detail + booking
+│   │   ├── bookings/
+│   │   │   └── page.tsx              # Guest — my trips
+│   │   └── host/
+│   │       ├── dashboard/
+│   │       │   └── page.tsx          # Host overview
+│   │       ├── listings/
+│   │       │   ├── page.tsx          # Manage listings
+│   │       │   ├── new/page.tsx      # Create listing
+│   │       │   └── [id]/page.tsx     # Edit listing
+│   │       └── payouts/
+│   │           └── page.tsx          # Payout history
+│   └── api/
+│       └── webhooks/
+│           └── stripe/
+│               └── route.ts          # Stripe webhook handler
+├── components/
+│   ├── ui/                           # shadcn/ui primitives
+│   ├── listings/
+│   │   ├── listing-card.tsx
+│   │   ├── listing-grid.tsx
+│   │   ├── listing-gallery.tsx
+│   │   └── listing-form.tsx
+│   ├── bookings/
+│   │   ├── booking-card.tsx
+│   │   ├── booking-form.tsx
+│   │   └── date-picker.tsx
+│   ├── payments/
+│   │   └── checkout-button.tsx
+│   ├── host/
+│   │   ├── stripe-onboarding.tsx
+│   │   └── payout-summary.tsx
+│   └── shared/
+│       ├── navbar.tsx
+│       ├── footer.tsx
+│       └── search-bar.tsx
+├── convex/
+│   ├── _generated/                   # Auto-generated by Convex CLI
+│   ├── schema.ts                     # Database schema
+│   ├── listings.ts                   # Listing queries + mutations
+│   ├── bookings.ts                   # Booking queries + mutations
+│   ├── users.ts                      # User profile queries
+│   ├── payments.ts                   # Payment record queries
+│   └── http.ts                       # HTTP actions (Stripe webhooks)
+├── lib/
+│   ├── stripe.ts                     # Stripe client instance
+│   ├── utils.ts                      # cn(), formatCurrency, etc.
+│   └── constants.ts                  # Platform fee %, categories, etc.
+├── hooks/
+│   ├── use-search-filters.ts
+│   └── use-booking-price.ts
+├── types/
+│   └── index.ts
+├── middleware.ts                      # Clerk route protection
+├── .env.local
+└── next.config.ts
+```
+
+---
+
+## Database schema (Convex)
+
+```ts
+// convex/schema.ts
+
+export default defineSchema({
+  users: defineTable({
+    clerkId: v.string(),
+    email: v.string(),
+    name: v.string(),
+    avatarUrl: v.optional(v.string()),
+    role: v.union(v.literal("guest"), v.literal("host")),
+    stripeAccountId: v.optional(v.string()), // Stripe Connect account
+    stripeOnboarded: v.optional(v.boolean()),
+  }).index("by_clerk_id", ["clerkId"]),
+
+  listings: defineTable({
+    hostId: v.id("users"),
+    title: v.string(),
+    description: v.string(),
+    location: v.string(),
+    category: v.string(),
+    pricePerNight: v.number(),
+    maxGuests: v.number(),
+    imageUrls: v.array(v.string()),
+    amenities: v.array(v.string()),
+    isPublished: v.boolean(),
+  }).index("by_host", ["hostId"]),
+
+  bookings: defineTable({
+    listingId: v.id("listings"),
+    guestId: v.id("users"),
+    hostId: v.id("users"),
+    checkIn: v.string(),
+    checkOut: v.string(),
+    guests: v.number(),
+    totalAmount: v.number(), // Total charged to guest
+    platformFee: v.number(), // Fee kept by platform
+    hostPayout: v.number(), // Amount routed to host
+    status: v.union(
+      v.literal("pending"),
+      v.literal("confirmed"),
+      v.literal("cancelled"),
+      v.literal("completed"),
+    ),
+    stripePaymentIntentId: v.string(),
+  })
+    .index("by_guest", ["guestId"])
+    .index("by_host", ["hostId"])
+    .index("by_listing", ["listingId"]),
+});
+```
+
+---
+
+## Payments — how Stripe Connect works here
+
+The platform uses **Stripe Connect Express** accounts. Here's the flow:
+
+```
+Guest pays $300 at checkout
+        │
+        ▼
+Stripe Checkout (platform's Stripe account)
+        │
+        ├─── $30 platform fee (10%) stays in platform account
+        │
+        └─── $270 transferred to host's Connect Express account
+                    │
+                    ▼
+             Host receives payout to their bank (Stripe manages this)
+```
+
+**Host onboarding:**
+
+1. Host clicks "Enable payouts" in their dashboard
+2. App creates a Stripe Express account via `stripe.accounts.create()`
+3. Host is redirected to Stripe's hosted onboarding flow
+4. On return, `stripeOnboarded: true` is set on their user record
+5. Hosts can't receive bookings until onboarding is complete
+
+**Checkout:**
+
+- `stripe.checkout.sessions.create()` with `payment_intent_data.transfer_data` pointing to the host's `stripeAccountId`
+- `application_fee_amount` captures the platform fee
+- Webhook confirms payment and updates booking status to `confirmed`
+
+**Webhook handler** (`/api/webhooks/stripe`) processes:
+
+- `checkout.session.completed` → confirm booking
+- `account.updated` → sync host onboarding status
+- `transfer.created` → log host payout record
+
+---
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 20+
+- A Convex account — [convex.dev](https://convex.dev)
+- A Clerk account — [clerk.com](https://clerk.com)
+- A Stripe account with Connect enabled — [stripe.com](https://stripe.com)
+
+### 1. Clone and install
+
+```bash
+git clone https://github.com/allanito/airbnb.git
+cd airbnb
+npm install
+```
+
+### 2. Environment variables
+
+```bash
+cp .env.example .env.local
+```
+
+```env
+# Convex
+NEXT_PUBLIC_CONVEX_URL=
+
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+# Stripe
+STRIPE_SECRET_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+PLATFORM_FEE_PERCENT=10
+```
+
+### 3. Set up Convex
+
+```bash
+npx convex dev
+```
+
+This spins up the Convex dev backend, syncs your schema, and generates types. Keep it running alongside `next dev`.
+
+### 4. Set up Stripe webhook (local)
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+Copy the webhook secret printed by the CLI into `STRIPE_WEBHOOK_SECRET`.
+
+### 5. Run the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
 
-## Learn More
+### Convex
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx convex deploy
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Promotes your backend to production. Copy the production URL to your hosting environment.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Next.js (Vercel)
 
-## Deploy on Vercel
+```bash
+vercel --prod
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Add all environment variables in the Vercel dashboard. Set `NEXT_PUBLIC_APP_URL` to your production domain.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Stripe webhook (production)
+
+Register `https://yourdomain.com/api/webhooks/stripe` as a webhook endpoint in the Stripe dashboard. Select `checkout.session.completed`, `account.updated`, and `transfer.created`.
+
+---
+
+## Key decisions
+
+**Why Convex over a traditional database?**
+Reactive queries meant zero polling code. The availability calendar and booking status update across tabs in real time without WebSockets or server-sent events to manage. The serverless functions run close to the data — no ORM, no connection pooling, no migrations.
+
+**Why Stripe Connect Express over Custom?**
+Express accounts handle KYC, identity verification, and tax form collection on Stripe's side. The platform never touches host banking details. Custom accounts give more control but require the platform to be a licensed money transmitter in some jurisdictions — not worth the complexity at this stage.
+
+**Why Clerk over NextAuth?**
+OAuth, magic links, session management, and role metadata out of the box in under 30 minutes. The Convex + Clerk integration is first-class — user identity flows directly into Convex mutations with `ctx.auth.getUserIdentity()`. No custom session handling anywhere.
+
+---
+
+## License
+
+MIT
