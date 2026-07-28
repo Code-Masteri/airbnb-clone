@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "module": "ESNext",
-    "target": "ES2023",
-    "types": ["bun-types"]
-  }
-}
