@@ -1,0 +1,8 @@
+New Terminal Output:
+
+root@c8832b20acb7:/app/services/scheduler# cd /app/services
+root@c8832b20acb7:/app/services# pg_isready -h localhost -p 5432
+bash: pg_isready: command not found
+root@c8832b20acb7:/app/services# redis-cli ping
+Could not connect to Redis at 127.0.0.1:6379: Connection refused
+root@c8832b20acb7:/app/services#
