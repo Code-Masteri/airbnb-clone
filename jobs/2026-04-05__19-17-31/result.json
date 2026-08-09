@@ -1,0 +1,29 @@
+{
+    "id": "62cbb59b-b107-4671-93f1-ecbf0b8730dd",
+    "started_at": "2026-04-05T19:17:36.324136",
+    "finished_at": "2026-04-05T19:20:03.708616",
+    "n_total_trials": 1,
+    "stats": {
+        "n_trials": 1,
+        "n_errors": 0,
+        "evals": {
+            "oracle__adhoc": {
+                "n_trials": 1,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "mean": 1.0
+                    }
+                ],
+                "reward_stats": {
+                    "reward": {
+                        "1.0": [
+                            "distributed_job_queue__ddDCiTR"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        }
+    }
+}
