@@ -1,0 +1,11 @@
+New Terminal Output:
+
+root@6f13ff8a8598:/app/services/scheduler# sed -i 's/str(depth)/depth/' scheduler.py
+root@6f13ff8a8598:/app/services/scheduler# grep -n 'priority.*i\|queue:jobs\|depth[^"]' scheduler.py
+14:            # Bug 5: priority is str not int
+15:            r = requests.post(f"{API_URL}/jobs", json={"payload": payload, "priority": i}, timeout=5)
+20:def check_queue_depth():
+21:    depth = redis_client.llen("queue:jobs")
+23:    redis_client.set("queue_depth", depth)
+26:schedule.every(10).seconds.do(check_queue_depth)
+root@6f13ff8a8598:/app/services/scheduler#
