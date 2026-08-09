@@ -1,0 +1,44 @@
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.0.1
+[notice] To update, run: pip install --upgrade pip
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://172.30.0.2:8000
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [04/Apr/2026 16:15:43] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:15:43] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:15:43] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+All services running
+127.0.0.1 - - [04/Apr/2026 16:16:05] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:16:05] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:16:05] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:16:35] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:16:35] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:16:35] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:05] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:05] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:05] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "GET /jobs?status=pending HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:26] "GET /jobs/17 HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:27] "GET /jobs/17 HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:27] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:36] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:36] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:36] "[35m[1mPOST /jobs HTTP/1.1[0m" 201 -
+127.0.0.1 - - [04/Apr/2026 16:17:39] "GET /jobs HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:39] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [04/Apr/2026 16:17:39] "GET /stats HTTP/1.1" 200 -
