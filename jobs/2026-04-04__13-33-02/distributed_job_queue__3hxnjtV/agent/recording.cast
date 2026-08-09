@@ -1,0 +1,10 @@
+{"version": 2, "width": 160, "height": 40, "timestamp": 1775299257, "env": {"SHELL": "/bin/bash", "TERM": "tmux-256color"}}
+[0.009985, "o", "\u001b[?2004hroot@5dbdbf2e2384:/app# "]
+[0.803231, "i", "clear\r"]
+[0.804681, "o", "clear\r\n\u001b[?2004l\r"]
+[0.8062, "o", "\u001b[H\u001b[J\u001b[3J\u001b[?2004hroot@5dbdbf2e2384:/app# "]
+[4.245082, "i", "ls -la /app/services/\n"]
+[4.247353, "o", "ls -la /app/services/\r\n\u001b[?2004l\r"]
+[4.253343, "o", "total 20\r\ndrwxr-xr-x 5 root root 4096 Apr  3 21:53 .\r\ndrwxr-xr-x 1 root root 4096 Apr  4 07:14 ..\r\ndrwxr-xr-x 2 root root 4096 Apr  4 07:13 api\r\ndrwxr-xr-x 2 root root 4096 Apr  3 21:53 scheduler\r\ndrwxr-xr-x 2 root root 4096 Apr  4 07:13 worker\r\n"]
+[4.253779, "o", "\u001b[?2004h"]
+[4.253818, "o", "root@5dbdbf2e2384:/app# "]

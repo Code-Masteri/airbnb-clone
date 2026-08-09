@@ -1,0 +1,6 @@
+New Terminal Output:
+
+root@7d4d3310c2ec:/app/services# curl -s -X POST http://localhost:8000/jobs -H "Content-Type: application/json" -d '{"name": "test_job", "priority": 5}'
+127.0.0.1 - - [04/Apr/2026 08:50:30] "POST /jobs HTTP/1.1" 400 -
+{"error":"payload required"}
+root@7d4d3310c2ec:/app/services#

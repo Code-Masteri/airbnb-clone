@@ -1,0 +1,6 @@
+New Terminal Output:
+
+root@97b23c1535ba:/app/services# cp scheduler/scheduler.py scheduler/scheduler.py.backup
+root@97b23c1535ba:/app/services# sed -i 's/priority: str(i)/priority: i/' scheduler/scheduler.py
+root@97b23c1535ba:/app/services# sed -i 's/str(depth)/depth/' scheduler/scheduler.py
+root@97b23c1535ba:/app/services#

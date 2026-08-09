@@ -1,0 +1,128 @@
+{
+    "id": "4eec0417-18fb-4c2e-8c40-78fd3e0e8b71",
+    "task_name": "fazaa/distributed_job_queue",
+    "trial_name": "distributed_job_queue__U3ARRY6",
+    "trial_uri": "file:///Users/faza/Documents/Dev/terminalbench-tasks/jobs/2026-04-04__10-39-08/distributed_job_queue__U3ARRY6",
+    "task_id": {
+        "path": "distributed_job_queue"
+    },
+    "source": null,
+    "task_checksum": "1e4f4967135c59b658700dcd67eaba44e3ef00b260f86f6a5d513c43b8d90498",
+    "config": {
+        "task": {
+            "path": "distributed_job_queue",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": null
+        },
+        "trial_name": "distributed_job_queue__U3ARRY6",
+        "trials_dir": "jobs/2026-04-04__10-39-08",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "terminus-2",
+            "import_path": null,
+            "model_name": "groq/moonshotai/kimi-k2-instruct-0905",
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "mounts_json": null,
+            "env": {},
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "f247d75f-986e-4f78-a757-25eb81263d7d"
+    },
+    "agent_info": {
+        "name": "terminus-2",
+        "version": "2.0.0",
+        "model_info": {
+            "name": "moonshotai/kimi-k2-instruct-0905",
+            "provider": "groq"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 121480,
+        "n_cache_tokens": 100864,
+        "n_output_tokens": 3384,
+        "cost_usd": 0.08120000000000001,
+        "rollout_details": [],
+        "metadata": {
+            "n_episodes": 25,
+            "api_request_times_msec": [
+                1293.1740283966064,
+                1010.8242034912109,
+                1118.8528537750244,
+                1135.8819007873535,
+                1466.6478633880615,
+                1660.1190567016602,
+                1827.754020690918,
+                5546.94390296936,
+                5400.858163833618,
+                9912.797927856445,
+                1614.1278743743896,
+                5985.105037689209,
+                5907.077789306641,
+                5424.948930740356,
+                5627.735137939453,
+                5656.413316726685,
+                1095.3640937805176,
+                5758.198022842407,
+                5453.249931335449,
+                5345.190048217773,
+                1115.5192852020264,
+                9890.562057495117,
+                9945.520877838135,
+                1558.4592819213867
+            ],
+            "summarization_count": 0
+        }
+    },
+    "verifier_result": null,
+    "exception_info": {
+        "exception_type": "RateLimitError",
+        "exception_message": "litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Request too large for model `moonshotai/kimi-k2-instruct-0905` in organization `org_01kn7vgt80e32afn7gra3q5zse` service tier `on_demand` on tokens per minute (TPM): Limit 10000, Requested 11653, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/llms/custom_httpx/llm_http_handler.py\", line 175, in _make_common_async_call\n    response = await async_httpx_client.post(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/litellm_core_utils/logging_utils.py\", line 297, in async_wrapper\n    result = await func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/llms/custom_httpx/http_handler.py\", line 513, in post\n    raise e\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/llms/custom_httpx/http_handler.py\", line 469, in post\n    response.raise_for_status()\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/httpx/_models.py\", line 829, in raise_for_status\n    raise HTTPStatusError(message, request=request, response=self)\nhttpx.HTTPStatusError: Client error '413 Request Entity Too Large' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/413\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/main.py\", line 620, in acompletion\n    response = await init_response\n               ^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/llms/custom_httpx/llm_http_handler.py\", line 307, in async_completion\n    response = await self._make_common_async_call(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/llms/custom_httpx/llm_http_handler.py\", line 200, in _make_common_async_call\n    raise self._handle_error(e=e, provider_config=provider_config)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/llms/custom_httpx/llm_http_handler.py\", line 4720, in _handle_error\n    raise provider_config.get_error_class(\nlitellm.llms.openai.common_utils.OpenAIError: {\"error\":{\"message\":\"Request too large for model `moonshotai/kimi-k2-instruct-0905` in organization `org_01kn7vgt80e32afn7gra3q5zse` service tier `on_demand` on tokens per minute (TPM): Limit 10000, Requested 11653, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py\", line 538, in run\n    await self._execute_agent()\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/trial/trial.py\", line 285, in _execute_agent\n    await asyncio.wait_for(\n  File \"/Users/faza/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/terminus_2/terminus_2.py\", line 1605, in run\n    await self._run_agent_loop(\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/terminus_2/terminus_2.py\", line 1306, in _run_agent_loop\n    ) = await self._handle_llm_interaction(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/terminus_2/terminus_2.py\", line 1181, in _handle_llm_interaction\n    llm_response = await self._query_llm(\n                   ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py\", line 193, in async_wrapped\n    return await copy(fn, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py\", line 112, in __call__\n    do = await self.iter(retry_state=retry_state)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py\", line 157, in iter\n    result = await action(retry_state)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/_utils.py\", line 111, in inner\n    return call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/__init__.py\", line 413, in exc_check\n    raise retry_exc.reraise()\n          ^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/__init__.py\", line 184, in reraise\n    raise self.last_attempt.result()\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py\", line 449, in result\n    return self.__get_result()\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py\", line 401, in __get_result\n    raise self._exception\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py\", line 116, in __call__\n    result = await fn(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/terminus_2/terminus_2.py\", line 1171, in _query_llm\n    raise e\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/agents/terminus_2/terminus_2.py\", line 1004, in _query_llm\n    llm_response = await chat.chat(\n                   ^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/llms/chat.py\", line 89, in chat\n    llm_response: LLMResponse = await self._model.call(\n                                ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py\", line 193, in async_wrapped\n    return await copy(fn, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py\", line 112, in __call__\n    do = await self.iter(retry_state=retry_state)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py\", line 157, in iter\n    result = await action(retry_state)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/_utils.py\", line 111, in inner\n    return call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/__init__.py\", line 413, in exc_check\n    raise retry_exc.reraise()\n          ^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/__init__.py\", line 184, in reraise\n    raise self.last_attempt.result()\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py\", line 449, in result\n    return self.__get_result()\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py\", line 401, in __get_result\n    raise self._exception\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/tenacity/asyncio/__init__.py\", line 116, in __call__\n    result = await fn(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/llms/lite_llm.py\", line 396, in call\n    self._handle_litellm_error(e)\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/llms/lite_llm.py\", line 631, in _handle_litellm_error\n    raise e\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/llms/lite_llm.py\", line 360, in call\n    response = await litellm.acompletion(**completion_kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/utils.py\", line 2090, in wrapper_async\n    raise e\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/utils.py\", line 1889, in wrapper_async\n    result = await original_function(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/main.py\", line 639, in acompletion\n    raise exception_type(\n          ^^^^^^^^^^^^^^^\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py\", line 2456, in exception_type\n    raise e\n  File \"/Users/faza/.local/share/uv/tools/harbor/lib/python3.12/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py\", line 392, in exception_type\n    raise RateLimitError(\nlitellm.exceptions.RateLimitError: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Request too large for model `moonshotai/kimi-k2-instruct-0905` in organization `org_01kn7vgt80e32afn7gra3q5zse` service tier `on_demand` on tokens per minute (TPM): Limit 10000, Requested 11653, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n\n",
+        "occurred_at": "2026-04-04T11:10:36.537319"
+    },
+    "started_at": "2026-04-04T08:07:02.725129Z",
+    "finished_at": "2026-04-04T08:10:49.164035Z",
+    "environment_setup": {
+        "started_at": "2026-04-04T08:07:02.740525Z",
+        "finished_at": "2026-04-04T08:07:16.883457Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-04-04T08:07:16.884736Z",
+        "finished_at": "2026-04-04T08:07:45.831035Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-04-04T08:07:45.833369Z",
+        "finished_at": "2026-04-04T08:10:36.511508Z"
+    },
+    "verifier": null
+}

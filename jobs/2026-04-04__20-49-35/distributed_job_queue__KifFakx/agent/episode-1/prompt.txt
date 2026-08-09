@@ -1,0 +1,41 @@
+New Terminal Output:
+root@f5283567834b:/app# ls -la
+total 12
+drwxr-xr-x 1 root root 4096 Apr  4 07:14 .
+drwxr-xr-x 1 root root 4096 Apr  4 17:50 ..
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 services
+root@f5283567834b:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
