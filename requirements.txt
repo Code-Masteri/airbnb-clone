@@ -1,0 +1,26 @@
+# Core ML — Apple Silicon optimized
+mlx>=0.16.0
+mlx-lm>=0.16.0
+
+# Hugging Face ecosystem
+transformers>=4.43.0
+huggingface_hub>=0.24.0
+datasets>=2.20.0
+tokenizers>=0.19.0
+
+# HTTP requests (for Ollama API)
+requests>=2.31.0
+
+# Data handling
+pydantic>=2.0.0
+
+# UI
+streamlit>=1.36.0
+
+# Logging / experiment tracking
+wandb>=0.17.0
+
+# Utilities
+tqdm>=4.66.0
+PyYAML>=6.0.1
+python-dotenv>=1.0.0
