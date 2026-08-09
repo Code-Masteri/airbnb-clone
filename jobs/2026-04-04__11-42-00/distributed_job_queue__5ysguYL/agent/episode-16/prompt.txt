@@ -1,0 +1,6 @@
+New Terminal Output:
+
+Scheduled generate_report: 400 {"error":"priority must be integer"}
+
+sed -i 's/DB_URL/DATABASE_URL/g' /app/services/api/app.py
+root@9f2243faa8bb:/app#
