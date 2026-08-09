@@ -1,0 +1,35 @@
+New Terminal Output:
+
+root@c89daa56873e:/app# ls -la /app/services/api/
+total 16
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 .
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 ..
+-rw-r--r-- 1 root root 3412 Apr  4 07:11 app.py
+-rw-r--r-- 1 root root   68 Apr  3 21:53 requirements.txt
+root@c89daa56873e:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
