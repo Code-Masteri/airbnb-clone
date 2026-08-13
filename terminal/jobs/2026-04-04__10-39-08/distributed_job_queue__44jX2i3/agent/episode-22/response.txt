@@ -1,0 +1,10 @@
+{
+  "analysis": "Good! I've fixed the database connection string. Now I need to fix the queue name from 'job_queue' to 'jobs' to match what the API is using.",
+  "plan": "I'll change the queue name from 'job_queue' to 'jobs' and then fix the status from 'done' to 'completed'.",
+  "commands": [
+    {
+      "keystrokes": "sed -i 's/job_queue/jobs/' worker/worker.py\n",
+      "duration": 0.1
+    }
+  ]
+}
