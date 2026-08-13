@@ -1,0 +1,10 @@
+{
+  "analysis": "I'm in the /app directory as root. The task is to fix a distributed job processing system with services in /app/services/. I need to examine the current state of the services, identify bugs, and fix them to meet the requirements. Let me start by exploring the directory structure and understanding what's available.",
+  "plan": "First, I'll list the contents of /app to see what's available, then explore the services directory structure to understand the codebase. After that, I'll examine the service files to identify potential issues before starting the services.",
+  "commands": [
+    {
+      "keystrokes": "ls -la\n",
+      "duration": 0.1
+    }
+  ]
+}
