@@ -1,0 +1,7 @@
+New Terminal Output:
+
+root@163179c68d5b:/app# cat /app/services/scheduler/requirements.txt
+requests==2.31.0
+redis==5.0.1
+schedule==1.2.1
+root@163179c68d5b:/app#
