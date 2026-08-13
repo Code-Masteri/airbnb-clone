@@ -1,0 +1,4 @@
+New Terminal Output:
+
+root@ce6728210b7c:/app/services# sed -i 's/job_queue/jobs/' worker/worker.py
+root@ce6728210b7c:/app/services#
