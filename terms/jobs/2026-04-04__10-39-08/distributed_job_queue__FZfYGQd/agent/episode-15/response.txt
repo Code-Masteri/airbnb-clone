@@ -1,0 +1,10 @@
+{
+  "analysis": "I've backed up the worker.py file. Now I need to fix the bug where the worker sets the job status to 'done' instead of 'completed'.",
+  "plan": "I'll edit the worker.py file to change the status from 'done' to 'completed'.",
+  "commands": [
+    {
+      "keystrokes": "sed -i \"s/status = 'done'/status = 'completed'/\" worker/worker.py\n",
+      "duration": 0.1
+    }
+  ]
+}
