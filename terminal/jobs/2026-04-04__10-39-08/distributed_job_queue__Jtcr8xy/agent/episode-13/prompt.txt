@@ -1,0 +1,7 @@
+New Terminal Output:
+
+root@7d217dbb9a50:/app/services# cp api/app.py api/app.py.backup
+root@7d217dbb9a50:/app/services# sed -i 's/DB_URL/DATABASE_URL/g' api/app.py
+root@7d217dbb9a50:/app/services# sed -i "s/redis_client.lpush(\"jobs\"/redis_client.lpush(\"jobs_queue\"/g" api/app.py
+root@7d217dbb9a50:/app/services# sed -i 's/ORDER BY priority ASC/ORDER BY priority DESC/g' api/app.py
+root@7d217dbb9a50:/app/services#
