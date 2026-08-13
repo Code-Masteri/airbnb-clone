@@ -1,0 +1,154 @@
+[?2004hroot@e2977c0321e2:/app# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@e2977c0321e2:/app# clear
+[?2004l[H[J[3J[?2004hroot@e2977c0321e2:/app# ls -la
+[?2004ltotal 12
+drwxr-xr-x 1 root root 4096 Apr  4 07:14 .
+drwxr-xr-x 1 root root 4096 Apr  4 08:51 ..
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 services
+[?2004hroot@e2977c0321e2:/app# cd services
+[?2004l[?2004hroot@e2977c0321e2:/app/services# ls -la
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 .
+drwxr-xr-x 1 root root 4096 Apr  4 07:14 ..
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 api
+drwxr-xr-x 2 root root 4096 Apr  3 21:53 scheduler
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 worker
+[?2004hroot@e2977c0321e2:/app/services# ls -la api/
+[?2004ltotal 16
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 .
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 ..
+-rw-r--r-- 1 root root 3412 Apr  4 07:11 app.py
+-rw-r--r-- 1 root root   68 Apr  3 21:53 requirements.txt
+[?2004hroot@e2977c0321e2:/app/services# cat api/app.py
+[?2004lfrom flask import Flask, jsonify, request
+from sqlalchemy import create_engine, text
+import redis
+import os
+import json
+import time
+
+app = Flask(__name__)
+
+# Bug 1: wrong env var — should be DATABASE_URL
+engine = create_engine(os.environ.get("DB_URL", "sqlite:////tmp/taskdb.sqlite"))
+redis_client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"))
+
+def init_db():
+    with engine.connect() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS jobs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                payload TEXT NOT NULL,
+                status TEXT DEFAULT 'pending',
+                priority INTEGER DEFAULT 0,
+                created_at TEXT DEFAULT (datetime('now')),
+                processed_at TEXT
+            )
+        """))
+        conn.commit()
+
+@app.route("/health")
+def health():
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        redis_client.ping()
+        return jsonify({"status": "healthy", "db": "ok", "redis": "ok"})
+    except Exception as e:
+        return jsonify({"status": "unhealthy", "error": str(e)}), 500
+
+@app.route("/jobs", methods=["POST"])
+def create_job():
+    data = request.get_json()
+    if not data or "payload" not in data:
+        return jsonify({"error": "payload required"}), 400
+    priority = data.get("priority", 0)
+    if not isinstance(priority, int):
+        return jsonify({"error": "priority must be integer"}), 400
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("INSERT INTO jobs (payload, priority) VALUES (:payload, :priority)"),
+            {"payload": data["payload"], "priority": priority}
+        )
+        conn.commit()
+        job_id = result.lastrowid
+    # Bug 2: wrong queue name
+    redis_client.lpush("jobs", json.dumps({"id": job_id, "payload": data["payload"], "priority": priority}))
+    return jsonify({"id": job_id, "status": "pending"}), 201
+
+@app.route("/jobs/<int:job_id>")
+def get_job(job_id):
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT id, payload, status, priority, created_at FROM jobs WHERE id = :id"),
+            {"id": job_id}
+        )
+        row = result.fetchone()
+    if not row:
+        return jsonify({"error": "not found"}), 404
+    return jsonify({"id": row[0], "payload": row[1], "status": row[2], "priority": row[3], "created_at": str(row[4])})
+
+@app.route("/jobs")
+def list_jobs():
+    status = request.args.get("status")
+    with engine.connect() as conn:
+        if status:
+            # Bug 3: ASC should be DESC
+            result = conn.execute(
+                text("SELECT id, payload, status, priority FROM jobs WHERE status = :status ORDER BY priority ASC"),
+                {"status": status}
+            )
+        else:
+            result = conn.execute(text("SELECT id, payload, status, priority FROM jobs ORDER BY created_at DESC"))
+        rows = result.fetchall()
+    return jsonify([{"id": r[0], "payload": r[1], "status": r[2], "priority": r[3]} for r in rows])
+
+@app.route("/stats")
+def stats():
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT status, COUNT(*) FROM jobs GROUP BY status"))
+        rows = result.fetchall()
+    return jsonify({row[0]: row[1] for row in rows})
+
+if __name__ == "__main__":
+    init_db()
+    app.run(host="0.0.0.0", port=8000, debug=False)
+[?2004hroot@e2977c0321e2:/app/services# cat worker/worker.py
+[?2004limport redis
+import json
+import os
+import time
+from sqlalchemy import create_engine, text
+
+redis_client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"))
+engine = create_engine(os.environ.get("DATABASE_URL", "sqlite:////tmp/taskdb.sqlite"))
+
+def process_job(job_data):
+    job_id = job_data["id"]
+    time.sleep(0.1)
+    with engine.connect() as conn:
+        # Bug 4: wrong status — should be 'completed'
+        conn.execute(
+            text("UPDATE jobs SET status = 'done', processed_at = datetime('now') WHERE id = :id"),
+            {"id": job_id}
+        )
+        conn.commit()
+    print(f"Job {job_id} processed")
+
+def main():
+    print("Worker listening on job_queue...")
+    while True:
+        try:
+            result = redis_client.brpop("job_queue", timeout=5)
+            if result:
+                _, data = result
+                process_job(json.loads(data))
+        except Exception as e:
+            print(f"Worker error: {e}")
+            time.sleep(1)
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@e2977c0321e2:/app/services# 
