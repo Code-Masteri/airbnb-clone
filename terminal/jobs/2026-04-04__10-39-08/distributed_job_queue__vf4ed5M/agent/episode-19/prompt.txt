@@ -1,0 +1,7 @@
+New Terminal Output:
+
+root@6f13ff8a8598:/app/services/worker# cd ../scheduler
+root@6f13ff8a8598:/app/services/scheduler# cp scheduler.py scheduler.py.backup
+root@6f13ff8a8598:/app/services/scheduler# sed -i 's/"priority": str(i)/"priority": i/' scheduler.py
+root@6f13ff8a8598:/app/services/scheduler# sed -i 's/"job_queue"/"queue:jobs"/' scheduler.py
+root@6f13ff8a8598:/app/services/scheduler#
