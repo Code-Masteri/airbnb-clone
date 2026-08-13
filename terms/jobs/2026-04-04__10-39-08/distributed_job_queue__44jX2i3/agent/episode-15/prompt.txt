@@ -1,0 +1,4 @@
+New Terminal Output:
+
+root@ce6728210b7c:/app/services# sed -i 's/INTEGER PRIMARY KEY AUTOINCREMENT/SERIAL PRIMARY KEY/' api/app.py
+root@ce6728210b7c:/app/services#
