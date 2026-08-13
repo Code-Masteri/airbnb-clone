@@ -1,0 +1,8 @@
+New Terminal Output:
+
+root@c3428967c233:/app# cat /app/services/api/requirements.txt
+flask==3.0.3
+psycopg2-binary==2.9.9
+redis==5.0.1
+sqlalchemy==2.0.23
+root@c3428967c233:/app#
