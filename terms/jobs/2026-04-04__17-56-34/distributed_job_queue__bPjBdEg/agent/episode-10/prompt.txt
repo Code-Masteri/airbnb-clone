@@ -1,0 +1,4 @@
+New Terminal Output:
+
+root@44b958f06188:/app# sed -i 's/redis_client.lpush("jobs"/redis_client.lpush("job_queue"/' services/api/app.py
+root@44b958f06188:/app#

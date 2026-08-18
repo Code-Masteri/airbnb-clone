@@ -1,0 +1,35 @@
+New Terminal Output:
+
+root@1e58025ce721:/app# redis-server --daemonize yes
+root@1e58025ce721:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

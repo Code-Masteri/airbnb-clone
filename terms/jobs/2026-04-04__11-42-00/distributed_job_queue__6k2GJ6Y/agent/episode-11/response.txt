@@ -1,0 +1,10 @@
+{
+  "analysis": "Good, I've fixed the queue name. Now I need to fix the ordering in the list_jobs function to use DESC instead of ASC for priority, so that higher priority jobs are listed first.",
+  "plan": "I'll change the ORDER BY clause from ASC to DESC to ensure higher priority jobs are listed first.",
+  "commands": [
+    {
+      "keystrokes": "sed -i 's/ORDER BY priority ASC/ORDER BY priority DESC/' services/api/app.py\n",
+      "duration": 0.1
+    }
+  ]
+}

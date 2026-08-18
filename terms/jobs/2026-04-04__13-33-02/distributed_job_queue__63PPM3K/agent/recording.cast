@@ -1,0 +1,13 @@
+{"version": 2, "width": 160, "height": 40, "timestamp": 1775299065, "env": {"SHELL": "/bin/bash", "TERM": "tmux-256color"}}
+[0.032624, "o", "\u001b[?2004hroot@d5dea22ee250:/app# "]
+[0.96966, "i", "clear\r"]
+[0.971181, "o", "clear"]
+[0.971219, "o", "\r\n\u001b[?2004l\r"]
+[0.97156, "o", "\u001b[H\u001b[J\u001b[3J"]
+[0.972033, "o", "\u001b[?2004hroot@d5dea22ee250:/app# "]
+[2.83336, "i", "ls -la /app/services/\n"]
+[2.833957, "o", "ls -la /app/services/\r\n\u001b[?2004l\r"]
+[2.836561, "o", "total 20\r\ndrwxr-xr-x 5 root root 4096 Apr  3 21:53 .\r\ndrwxr-xr-x 1 root root 4096 Apr  4 07:14 ..\r\ndrwxr-xr-x 2 root root 4096 Apr  4 07:13 api\r\ndrwxr-xr-x 2 root root 4096 Apr  3 21:53 scheduler\r\ndrwxr-xr-x 2 root root 4096 Apr  4 07:13 worker\r\n"]
+[2.836907, "o", "\u001b[?2004hroot@d5dea22ee250:/app# "]
+[4.925708, "i", "ls -la /app/services/api/\n"]
+[4.934792, "o", "ls -la /app/services/api/\r\n\u001b[?2004l\rtotal 16\r\ndrwxr-xr-x 2 root root 4096 Apr  4 07:13 .\r\ndrwxr-xr-x 5 root root 4096 Apr  3 21:53 ..\r\n-rw-r--r-- 1 root root 3412 Apr  4 07:11 app.py\r\n-rw-r--r-- 1 root root   68 Apr  3 21:53 requirements.txt\r\n\u001b[?2004hroot@d5dea22ee250:/app# "]

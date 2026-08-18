@@ -1,0 +1,10 @@
+{
+  "analysis": "I'm in the /app directory of a container with a broken distributed job processing system. I need to examine the services in /app/services/ to understand the current state and identify bugs. The system consists of an API service, worker, and scheduler that need to work together with Redis and SQLite.",
+  "plan": "First, I'll explore the directory structure to understand the codebase layout, then examine the individual service files to identify potential issues. After that, I'll start the services in the specified order and test the functionality.",
+  "commands": [
+    {
+      "keystrokes": "ls -la\n",
+      "duration": 0.1
+    }
+  ]
+}

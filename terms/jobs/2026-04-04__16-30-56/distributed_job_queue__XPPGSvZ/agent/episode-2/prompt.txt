@@ -1,0 +1,37 @@
+New Terminal Output:
+
+root@9c2a9be2f0e5:/app# cd services
+root@9c2a9be2f0e5:/app/services# ls -la
+total 20
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 .
+drwxr-xr-x 1 root root 4096 Apr  4 07:14 ..
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 api
+drwxr-xr-x 2 root root 4096 Apr  3 21:53 scheduler
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 worker
+root@9c2a9be2f0e5:/app/services#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

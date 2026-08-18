@@ -1,0 +1,5 @@
+New Terminal Output:
+
+root@302976b89dd7:/app# grep -n "job_queue" services/api/app.py
+54:    redis_client.lpush("job_queue", json.dumps({"id": job_id, "payload": data["payload"], "priority": priority}))
+root@302976b89dd7:/app#
