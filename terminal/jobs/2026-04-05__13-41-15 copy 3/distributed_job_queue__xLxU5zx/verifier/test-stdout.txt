@@ -1,0 +1,47 @@
+Get:1 http://deb.debian.org/debian trixie InRelease [140 kB]
+Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+Get:4 http://deb.debian.org/debian trixie/main arm64 Packages [9607 kB]
+Ign:4 http://deb.debian.org/debian trixie/main arm64 Packages
+Ign:5 http://deb.debian.org/debian trixie-updates/main arm64 Packages
+Ign:6 http://deb.debian.org/debian-security trixie-security/main arm64 Packages
+Ign:6 http://deb.debian.org/debian-security trixie-security/main arm64 Packages
+Ign:5 http://deb.debian.org/debian trixie-updates/main arm64 Packages
+Ign:4 http://deb.debian.org/debian trixie/main arm64 Packages
+Ign:4 http://deb.debian.org/debian trixie/main arm64 Packages
+Ign:5 http://deb.debian.org/debian trixie-updates/main arm64 Packages
+Ign:6 http://deb.debian.org/debian-security trixie-security/main arm64 Packages
+Ign:6 http://deb.debian.org/debian-security trixie-security/main arm64 Packages
+Ign:5 http://deb.debian.org/debian trixie-updates/main arm64 Packages
+Ign:4 http://deb.debian.org/debian trixie/main arm64 Packages
+Ign:6 http://deb.debian.org/debian-security trixie-security/main arm64 Packages
+Ign:5 http://deb.debian.org/debian trixie-updates/main arm64 Packages
+Ign:4 http://deb.debian.org/debian trixie/main arm64 Packages
+Ign:6 http://deb.debian.org/debian-security trixie-security/main arm64 Packages
+Ign:5 http://deb.debian.org/debian trixie-updates/main arm64 Packages
+Ign:4 http://deb.debian.org/debian trixie/main arm64 Packages
+Err:6 http://deb.debian.org/debian-security trixie-security/main arm64 Packages
+  Could not resolve 'deb.debian.org' [IP: 151.101.194.132 80]
+Err:5 http://deb.debian.org/debian trixie-updates/main arm64 Packages
+  Could not resolve 'deb.debian.org' [IP: 151.101.194.132 80]
+Err:4 http://deb.debian.org/debian trixie/main arm64 Packages
+  Connection timed out [IP: 151.101.194.132 80]
+  Could not resolve 'deb.debian.org' [IP: 151.101.194.132 80]
+Ign:4 http://deb.debian.org/debian trixie/main arm64 Packages
+Err:4 http://deb.debian.org/debian trixie/main arm64 Packages
+  Connection timed out [IP: 151.101.194.132 80]
+  Could not resolve 'deb.debian.org' [IP: 151.101.194.132 80]
+Fetched 231 kB in 4min 2s (954 B/s)
+Reading package lists...
+W: Failed to fetch http://deb.debian.org/debian/dists/trixie/main/binary-arm64/Packages  Could not resolve 'deb.debian.org' [IP: 151.101.194.132 80]
+W: Failed to fetch http://deb.debian.org/debian/dists/trixie-updates/main/binary-arm64/Packages  Could not resolve 'deb.debian.org' [IP: 151.101.194.132 80]
+W: Failed to fetch http://deb.debian.org/debian-security/dists/trixie-security/main/binary-arm64/Packages  Could not resolve 'deb.debian.org' [IP: 151.101.194.132 80]
+W: Some index files failed to download. They have been ignored, or old ones used instead.
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.14.1-2+deb13u2).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+curl: (6) Could not resolve host: astral.sh
+/tests/test.sh: line 11: /root/.local/bin/env: No such file or directory
+/tests/test.sh: line 15: uvx: command not found

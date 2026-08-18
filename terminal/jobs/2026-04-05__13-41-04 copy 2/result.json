@@ -1,0 +1,40 @@
+{
+    "id": "7bda0415-5cc8-464d-ac21-70b8dbcbaf22",
+    "started_at": "2026-04-05T13:41:09.448200",
+    "finished_at": "2026-04-05T13:59:01.218459",
+    "n_total_trials": 10,
+    "stats": {
+        "n_trials": 10,
+        "n_errors": 10,
+        "evals": {
+            "terminus-2__moonshotai-kimi-k2-instruct-0905__adhoc": {
+                "n_trials": 0,
+                "n_errors": 10,
+                "metrics": [
+                    {
+                        "mean": 0.0
+                    }
+                ],
+                "reward_stats": {},
+                "exception_stats": {
+                    "AgentSetupTimeoutError": [
+                        "distributed_job_queue__8YTggQ2"
+                    ],
+                    "RuntimeError": [
+                        "distributed_job_queue__zbUya63",
+                        "distributed_job_queue__w5RtVwP",
+                        "distributed_job_queue__F9SKQC4",
+                        "distributed_job_queue__U9i6tVH",
+                        "distributed_job_queue__wkmVGvi",
+                        "distributed_job_queue__xQpdALK",
+                        "distributed_job_queue__zF5f3d5"
+                    ],
+                    "BadRequestError": [
+                        "distributed_job_queue__YGAwyDk",
+                        "distributed_job_queue__tt7FKJ2"
+                    ]
+                }
+            }
+        }
+    }
+}
