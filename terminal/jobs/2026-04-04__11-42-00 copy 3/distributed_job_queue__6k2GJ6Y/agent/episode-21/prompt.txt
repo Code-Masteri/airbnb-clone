@@ -1,0 +1,6 @@
+New Terminal Output:
+
+root@302976b89dd7:/app# grep -n "completed" services/worker/worker.py
+14:        # Bug 4: wrong status — should be 'completed'
+16:            text("UPDATE jobs SET status = 'completed', processed_at = datetime('now') WHERE id = :id"),
+root@302976b89dd7:/app#
