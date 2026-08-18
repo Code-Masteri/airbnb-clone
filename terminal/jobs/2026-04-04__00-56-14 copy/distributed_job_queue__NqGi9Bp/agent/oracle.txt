@@ -1,0 +1,1061 @@
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.0.1
+[notice] To update, run: pip install --upgrade pip
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 145, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3292, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 452, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1269, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 716, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 169, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 167, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 393, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 678, in __init__
+    self.__connect()
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 902, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 898, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 637, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 616, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/services/api/app.py", line 93, in <module>
+    init_db()
+  File "/app/services/api/app.py", line 15, in init_db
+    with engine.connect() as conn:
+         ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3268, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 147, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2430, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 145, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3292, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 452, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1269, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 716, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 169, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 167, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 393, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 678, in __init__
+    self.__connect()
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 902, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 898, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 637, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 616, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+All services running
+Scheduler started
+Scheduler error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /jobs (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+Scheduler error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /jobs (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+Scheduler error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /jobs (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/redis/connection.py", line 264, in connect
+    sock = self.retry.call_with_retry(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/redis/retry.py", line 46, in call_with_retry
+    return do()
+           ^^^^
+  File "/usr/local/lib/python3.12/site-packages/redis/connection.py", line 265, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)
+            ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/redis/connection.py", line 627, in _connect
+    raise err
+  File "/usr/local/lib/python3.12/site-packages/redis/connection.py", line 615, in _connect
+    sock.connect(socket_address)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/services/scheduler/scheduler.py", line 33, in <module>
+    schedule.run_pending()
+  File "/usr/local/lib/python3.12/site-packages/schedule/__init__.py", line 822, in run_pending
+    default_scheduler.run_pending()
+  File "/usr/local/lib/python3.12/site-packages/schedule/__init__.py", line 100, in run_pending
+    self._run_job(job)
+  File "/usr/local/lib/python3.12/site-packages/schedule/__init__.py", line 172, in _run_job
+    ret = job.run()
+          ^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/schedule/__init__.py", line 693, in run
+    ret = self.job_func()
+          ^^^^^^^^^^^^^^^
+  File "/app/services/scheduler/scheduler.py", line 21, in check_queue_depth
+    depth = redis_client.llen("job_queue")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/redis/commands/core.py", line 2707, in llen
+    return self.execute_command("LLEN", name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/redis/connection.py", line 1086, in get_connection
+    connection.connect()
+  File "/usr/local/lib/python3.12/site-packages/redis/connection.py", line 270, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 111 connecting to localhost:6379. Connection refused.
+Worker listening on job_queue...
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
+Worker error: Error 111 connecting to localhost:6379. Connection refused.
