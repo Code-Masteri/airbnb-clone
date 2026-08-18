@@ -1,0 +1,5 @@
+New Terminal Output:
+
+root@ce6728210b7c:/app/services# sed -i 's/sqlite:////tmp/taskdb.sqlite/postgresql://admin:secret123@localhost:5432/taskdb/' api/app.py
+sed: -e expression #1, char 12: unknown option to `s'
+root@ce6728210b7c:/app/services#

@@ -1,0 +1,41 @@
+New Terminal Output:
+root@7d4d3310c2ec:/app# ls -la
+total 12
+drwxr-xr-x 1 root root 4096 Apr  4 07:14 .
+drwxr-xr-x 1 root root 4096 Apr  4 08:50 ..
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 services
+root@7d4d3310c2ec:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

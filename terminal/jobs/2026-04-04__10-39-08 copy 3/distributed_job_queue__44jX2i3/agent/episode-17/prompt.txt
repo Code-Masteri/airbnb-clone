@@ -1,0 +1,20 @@
+New Terminal Output:
+
+root@ce6728210b7c:/app/services# sed -n '15,30p' api/app.py
+    with engine.connect() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS jobs (
+                id SERIAL PRIMARY KEY,
+                payload TEXT NOT NULL,
+                status TEXT DEFAULT 'pending',
+                priority INTEGER DEFAULT 0,
+                created_at TEXT DEFAULT (CURRENT_TIMESTAMP),
+                processed_at TEXT
+            )
+        """))
+        conn.commit()
+
+@app.route("/health")
+def health():
+    try:
+root@ce6728210b7c:/app/services#

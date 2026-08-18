@@ -1,0 +1,393 @@
+[?2004hroot@7d217dbb9a50:/app# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@7d217dbb9a50:/app# clear
+[?2004l[H[J[3J[?2004hroot@7d217dbb9a50:/app# ls -la
+[?2004ltotal 12
+drwxr-xr-x 1 root root 4096 Apr  4 07:14 .
+drwxr-xr-x 1 root root 4096 Apr  4 07:52 ..
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 services
+[?2004hroot@7d217dbb9a50:/app# cd services
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# ls -la
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 .
+drwxr-xr-x 1 root root 4096 Apr  4 07:14 ..
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 api
+drwxr-xr-x 2 root root 4096 Apr  3 21:53 scheduler
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 worker
+[?2004hroot@7d217dbb9a50:/app/services# ls -la api/
+[?2004ltotal 16
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 .
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 ..
+-rw-r--r-- 1 root root 3412 Apr  4 07:11 app.py
+-rw-r--r-- 1 root root   68 Apr  3 21:53 requirements.txt
+[?2004hroot@7d217dbb9a50:/app/services# cat api/app.py
+[?2004lfrom flask import Flask, jsonify, request
+from sqlalchemy import create_engine, text
+import redis
+import os
+import json
+import time
+
+app = Flask(__name__)
+
+# Bug 1: wrong env var — should be DATABASE_URL
+engine = create_engine(os.environ.get("DB_URL", "sqlite:////tmp/taskdb.sqlite"))
+redis_client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"))
+
+def init_db():
+    with engine.connect() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS jobs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                payload TEXT NOT NULL,
+                status TEXT DEFAULT 'pending',
+                priority INTEGER DEFAULT 0,
+                created_at TEXT DEFAULT (datetime('now')),
+                processed_at TEXT
+            )
+        """))
+        conn.commit()
+
+@app.route("/health")
+def health():
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        redis_client.ping()
+        return jsonify({"status": "healthy", "db": "ok", "redis": "ok"})
+    except Exception as e:
+        return jsonify({"status": "unhealthy", "error": str(e)}), 500
+
+@app.route("/jobs", methods=["POST"])
+def create_job():
+    data = request.get_json()
+    if not data or "payload" not in data:
+        return jsonify({"error": "payload required"}), 400
+    priority = data.get("priority", 0)
+    if not isinstance(priority, int):
+        return jsonify({"error": "priority must be integer"}), 400
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("INSERT INTO jobs (payload, priority) VALUES (:payload, :priority)"),
+            {"payload": data["payload"], "priority": priority}
+        )
+        conn.commit()
+        job_id = result.lastrowid
+    # Bug 2: wrong queue name
+    redis_client.lpush("jobs", json.dumps({"id": job_id, "payload": data["payload"], "priority": priority}))
+    return jsonify({"id": job_id, "status": "pending"}), 201
+
+@app.route("/jobs/<int:job_id>")
+def get_job(job_id):
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT id, payload, status, priority, created_at FROM jobs WHERE id = :id"),
+            {"id": job_id}
+        )
+        row = result.fetchone()
+    if not row:
+        return jsonify({"error": "not found"}), 404
+    return jsonify({"id": row[0], "payload": row[1], "status": row[2], "priority": row[3], "created_at": str(row[4])})
+
+@app.route("/jobs")
+def list_jobs():
+    status = request.args.get("status")
+    with engine.connect() as conn:
+        if status:
+            # Bug 3: ASC should be DESC
+            result = conn.execute(
+                text("SELECT id, payload, status, priority FROM jobs WHERE status = :status ORDER BY priority ASC"),
+                {"status": status}
+            )
+        else:
+            result = conn.execute(text("SELECT id, payload, status, priority FROM jobs ORDER BY created_at DESC"))
+        rows = result.fetchall()
+    return jsonify([{"id": r[0], "payload": r[1], "status": r[2], "priority": r[3]} for r in rows])
+
+@app.route("/stats")
+def stats():
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT status, COUNT(*) FROM jobs GROUP BY status"))
+        rows = result.fetchall()
+    return jsonify({row[0]: row[1] for row in rows})
+
+if __name__ == "__main__":
+    init_db()
+    app.run(host="0.0.0.0", port=8000, debug=False)
+[?2004hroot@7d217dbb9a50:/app/services# cat worker/app.py
+[?2004lcat: worker/app.py: No such file or directory
+[?2004hroot@7d217dbb9a50:/app/services# ls -la worker/
+[?2004ltotal 16
+drwxr-xr-x 2 root root 4096 Apr  4 07:13 .
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 ..
+-rw-r--r-- 1 root root   55 Apr  3 21:53 requirements.txt
+-rw-r--r-- 1 root root 1038 Apr  4 07:12 worker.py
+[?2004hroot@7d217dbb9a50:/app/services# cat worker/worker.py
+[?2004limport redis
+import json
+import os
+import time
+from sqlalchemy import create_engine, text
+
+redis_client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"))
+engine = create_engine(os.environ.get("DATABASE_URL", "sqlite:////tmp/taskdb.sqlite"))
+
+def process_job(job_data):
+    job_id = job_data["id"]
+    time.sleep(0.1)
+    with engine.connect() as conn:
+        # Bug 4: wrong status — should be 'completed'
+        conn.execute(
+            text("UPDATE jobs SET status = 'done', processed_at = datetime('now') WHERE id = :id"),
+            {"id": job_id}
+        )
+        conn.commit()
+    print(f"Job {job_id} processed")
+
+def main():
+    print("Worker listening on job_queue...")
+    while True:
+        try:
+            result = redis_client.brpop("job_queue", timeout=5)
+            if result:
+                _, data = result
+                process_job(json.loads(data))
+        except Exception as e:
+            print(f"Worker error: {e}")
+            time.sleep(1)
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@7d217dbb9a50:/app/services# ls -la scheduler/
+[?2004ltotal 16
+drwxr-xr-x 2 root root 4096 Apr  3 21:53 .
+drwxr-xr-x 5 root root 4096 Apr  3 21:53 ..
+-rw-r--r-- 1 root root   46 Apr  3 21:53 requirements.txt
+-rw-r--r-- 1 root root 1110 Apr  3 21:53 scheduler.py
+[?2004hroot@7d217dbb9a50:/app/services# cat scheduler/scheduler.py
+[?2004limport requests
+import redis
+import schedule
+import time
+import os
+
+API_URL = os.environ.get("API_URL", "http://localhost:8000")
+redis_client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"))
+
+def submit_scheduled_jobs():
+    payloads = ["health_check", "cleanup_old_records", "generate_report"]
+    for i, payload in enumerate(payloads):
+        try:
+            # Bug 5: priority is str not int
+            r = requests.post(f"{API_URL}/jobs", json={"payload": payload, "priority": str(i)}, timeout=5)
+            print(f"Scheduled {payload}: {r.status_code} {r.text}")
+        except Exception as e:
+            print(f"Scheduler error: {e}")
+
+def check_queue_depth():
+    depth = redis_client.llen("job_queue")
+    # Bug 6: stores as string — should be int
+    redis_client.set("queue_depth", str(depth))
+
+schedule.every(30).seconds.do(submit_scheduled_jobs)
+schedule.every(10).seconds.do(check_queue_depth)
+
+if __name__ == "__main__":
+    time.sleep(8)
+    print("Scheduler started")
+    submit_scheduled_jobs()
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+[?2004hroot@7d217dbb9a50:/app/services# cat api/requirements.txt
+[?2004lflask==3.0.3
+psycopg2-binary==2.9.9
+redis==5.0.1
+sqlalchemy==2.0.23
+[?2004hroot@7d217dbb9a50:/app/services# cat worker/requirements.txt
+[?2004lredis==5.0.1
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+[?2004hroot@7d217dbb9a50:/app/services# cat scheduler/requirements.txt
+[?2004lrequests==2.31.0
+redis==5.0.1
+schedule==1.2.1
+[?2004hroot@7d217dbb9a50:/app/services# cp api/app.py api/app.py.backup
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# sed -i 's/DB_URL/DATABASE_URL/g' api/app.py
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# sed -i "s/redis_client.lpush(\"jobs\"/redis_client.lpush(\"jobs_queue\"/g" api/app.py
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# sed -i 's/ORDER BY priority ASC/ORDER BY priority DESC/g' api/app.py
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# grep -n "DATABASE_URL\|jobs_queue\|DESC" api/app.py
+[?2004l10:# Bug 1: wrong env var — should be DATABASE_URL
+11:engine = create_engine(os.environ.get("DATABASE_URL", "sqlite:////tmp/taskdb.sqlite"))
+54:    redis_client.lpush("jobs_queue", json.dumps({"id": job_id, "payload": data["payload"], "priority": priority}))
+74:            # Bug 3: ASC should be DESC
+76:                text("SELECT id, payload, status, priority FROM jobs WHERE status = :status ORDER BY priority DESC"),
+80:            result = conn.execute(text("SELECT id, payload, status, priority FROM jobs ORDER BY created_at DESC"))
+[?2004hroot@7d217dbb9a50:/app/services# cp worker/worker.py worker/worker.py.backup
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# sed -i "s/status = 'done'/status = 'completed'/g" worker/worker.py
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# cp scheduler/scheduler.py scheduler/scheduler.py.backup
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# sed -i 's/priority": str(i)/priority": int(i)/g' scheduler/scheduler.py
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# sed -i 's/redis_client.set(\"queue_depth\", str(depth))/redis_client.set(\"queue_depth\", int(depth))/g' scheduler/scheduler.py M[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ky
+[?2004l[?2004hroot@7d217dbb9a50:/app/services# grep -n "int(i)\|int(depth)" scheduler/scheduler.py
+[?2004l15:            r = requests.post(f"{API_URL}/jobs", json={"payload": payload, "priority": int(i)}, timeout=5)
+23:    redis_client.set("queue_depth", int(depth))
+[?2004hroot@7d217dbb9a50:/app/services# cd /app/services/api && pip install -r requirements.txt
+[?2004lRequirement already satisfied: flask==3.0.3 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (3.0.3)
+Requirement already satisfied: psycopg2-binary==2.9.9 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (2.9.9)
+Requirement already satisfied: redis==5.0.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (5.0.1)
+Requirement already satisfied: sqlalchemy==2.0.23 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (2.0.23)
+Requirement already satisfied: Werkzeug>=3.0.0 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (3.1.8)
+Requirement already satisfied: Jinja2>=3.1.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (3.1.6)
+Requirement already satisfied: itsdangerous>=2.1.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (2.2.0)
+Requirement already satisfied: click>=8.1.3 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (8.3.2)
+Requirement already satisfied: blinker>=1.6.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (1.9.0)
+Requirement already satisfied: typing-extensions>=4.2.0 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 4)) (4.15.0)
+Requirement already satisfied: greenlet!=0.4.17 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 4)) (3.3.2)
+Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/site-packages (from Jinja2>=3.1.2->flask==3.0.3->-r requirements.txt (line 1)) (3.0.3)
+[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.[0m[33m
+[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m25.0.1[0m[39;49m -> [0m[32;49m26.0.1[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
+[?2004hroot@7d217dbb9a50:/app/services/api# cd /app/services/worker && pip install -r requirements.txt
+[?2004lRequirement already satisfied: redis==5.0.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (5.0.1)
+Requirement already satisfied: psycopg2-binary==2.9.9 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (2.9.9)
+Requirement already satisfied: sqlalchemy==2.0.23 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (2.0.23)
+Requirement already satisfied: typing-extensions>=4.2.0 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 3)) (4.15.0)
+Requirement already satisfied: greenlet!=0.4.17 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 3)) (3.3.2)
+[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.[0m[33m
+[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m25.0.1[0m[39;49m -> [0m[32;49m26.0.1[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
+[?2004hroot@7d217dbb9a50:/app/services/worker# cd /app/services/scheduler && pip install -r requirements.txt
+[?2004lRequirement already satisfied: requests==2.31.0 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (2.31.0)
+Requirement already satisfied: redis==5.0.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (5.0.1)
+Requirement already satisfied: schedule==1.2.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (1.2.1)
+Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.12/site-packages (from requests==2.31.0->-r requirements.txt (line 1)) (3.4.7)
+Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.12/site-packages (from requests==2.31.0->-r requirements.txt (line 1)) (3.11)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.12/site-packages (from requests==2.31.0->-r requirements.txt (line 1)) (2.6.3)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.12/site-packages (from requests==2.31.0->-r requirements.txt (line 1)) (2026.2.25)
+[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.[0m[33m
+[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m25.0.1[0m[39;49m -> [0m[32;49m26.0.1[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
+[?2004hroot@7d217dbb9a50:/app/services/scheduler# cd /app/services/api && export DATABASE_URL="postgresql://admin:secret123@localhost:5432/taskdb" && export REDIS_URL="redis://localhost:6379" && python app.py
+[?2004lTraceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 145, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3292, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 452, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1269, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 716, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 169, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 167, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 393, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 678, in __init__
+    self.__connect()
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 902, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 898, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 637, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 616, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/services/api/app.py", line 92, in <module>
+    init_db()
+  File "/app/services/api/app.py", line 15, in init_db
+    with engine.connect() as conn:
+         ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3268, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 147, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2430, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 145, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3292, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 452, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1269, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 716, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 169, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 167, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 393, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 678, in __init__
+    self.__connect()
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 902, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 898, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 637, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 616, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[?2004hroot@7d217dbb9a50:/app/services/api# 

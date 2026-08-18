@@ -1,0 +1,11 @@
+New Terminal Output:
+
+root@13535fd84941:/app/services# cat worker/requirements.txt
+redis==5.0.1
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+root@13535fd84941:/app/services# cat scheduler/requirements.txt
+requests==2.31.0
+redis==5.0.1
+schedule==1.2.1
+root@13535fd84941:/app/services#
