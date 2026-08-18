@@ -1,0 +1,25 @@
+New Terminal Output:
+
+root@6f13ff8a8598:/app/services# cd api
+root@6f13ff8a8598:/app/services/api# pip install -r requirements.txt
+Requirement already satisfied: flask==3.0.3 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (3.0.3)
+Requirement already satisfied: psycopg2-binary==2.9.9 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (2.9.9)
+Requirement already satisfied: redis==5.0.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (5.0.1)
+Requirement already satisfied: sqlalchemy==2.0.23 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (2.0.23)
+Requirement already satisfied: Werkzeug>=3.0.0 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (3.1.8)
+Requirement already satisfied: Jinja2>=3.1.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (3.1.6)
+Requirement already satisfied: itsdangerous>=2.1.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (2.2.0)
+Requirement already satisfied: click>=8.1.3 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (8.3.2)
+Requirement already satisfied: blinker>=1.6.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (1.9.0)
+Requirement already satisfied: typing-extensions>=4.2.0 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 4)) (4.15
+.0)
+Requirement already satisfied: greenlet!=0.4.17 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 4)) (3.3.2)
+Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/site-packages (from Jinja2>=3.1.2->flask==3.0.3->-r requirements.txt (line 1)) (3.0.
+3)
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your syst
+em unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you a
+re doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.0.1
+[notice] To update, run: pip install --upgrade pip
+root@6f13ff8a8598:/app/services/api#
