@@ -1,0 +1,8 @@
+New Terminal Output:
+
+root@97b23c1535ba:/app/services# grep -n "priority: i\|depth" scheduler/scheduler.py
+20:def check_queue_depth():
+21:    depth = redis_client.llen("job_queue")
+23:    redis_client.set("queue_depth", depth)
+26:schedule.every(10).seconds.do(check_queue_depth)
+root@97b23c1535ba:/app/services#
