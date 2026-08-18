@@ -1,0 +1,14 @@
+{
+  "analysis": "I've fixed the API bugs. Now I need to fix the worker bug by changing the status from 'done' to 'completed'.",
+  "plan": "I'll fix the worker by changing the status update from 'done' to 'completed'.",
+  "commands": [
+    {
+      "keystrokes": "cp worker/worker.py worker/worker.py.backup\n",
+      "duration": 0.1
+    },
+    {
+      "keystrokes": "sed -i \"s/status = 'done'/status = 'completed'/\" worker/worker.py\n",
+      "duration": 0.1
+    }
+  ]
+}
