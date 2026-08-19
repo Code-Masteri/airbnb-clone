@@ -1,7 +1,0 @@
-New Terminal Output:
-
-root@6f13ff8a8598:/app/services/api# cd ../worker
-root@6f13ff8a8598:/app/services/worker# cp worker.py worker.py.backup
-root@6f13ff8a8598:/app/services/worker# sed -i 's/"job_queue"/"queue:jobs"/' worker.py
-root@6f13ff8a8598:/app/services/worker# sed -i "s/status = 'done'/status = 'completed'/' worker.py
->
