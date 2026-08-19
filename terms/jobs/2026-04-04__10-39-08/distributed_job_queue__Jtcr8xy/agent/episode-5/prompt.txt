@@ -1,5 +1,0 @@
-New Terminal Output:
-
-root@7d217dbb9a50:/app/services# cat worker/app.py
-cat: worker/app.py: No such file or directory
-root@7d217dbb9a50:/app/services#
