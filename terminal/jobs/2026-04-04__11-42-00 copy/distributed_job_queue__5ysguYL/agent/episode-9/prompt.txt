@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@9f2243faa8bb:/app# curl -s http://localhost:8000/health
-127.0.0.1 - - [04/Apr/2026 08:43:41] "GET /health HTTP/1.1" 200 -
-{"db":"ok","redis":"ok","status":"healthy"}
-root@9f2243faa8bb:/app#

@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@97b23c1535ba:/app/services# cp api/app.py api/app.py.backup
-root@97b23c1535ba:/app/services#

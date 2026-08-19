@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@43dcf58aa146:/app# sed -i 's/DB_URL/DATABASE_URL/g' /app/services/api/app.py
-root@43dcf58aa146:/app# sed -i "s/redis_client.lpush(\"jobs\"/redis_client.lpush(\"job_queue\"/" /app/services/api/app.py
-root@43dcf58aa146:/app# sed -i 's/ORDER BY priority ASC/ORDER BY priority DESC/' /app/services/api/app.py
-root@43dcf58aa146:/app#

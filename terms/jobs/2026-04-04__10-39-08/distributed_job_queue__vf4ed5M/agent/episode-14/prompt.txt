@@ -1,9 +1,0 @@
-Previous response had warnings:
-WARNINGS: - Command 1 should end with newline when followed by another command. Otherwise the two commands will be concatenated together on the same line.
-
-New Terminal Output:
-
-> ^C
-root@6f13ff8a8598:/app/services/api# sed -i 's/"jobs"/"queue:jobs"/' app.py
-root@6f13ff8a8598:/app/services/api# sed -i 's/ORDER BY priority ASC/ORDER BY priority DESC/' app.py
-root@6f13ff8a8598:/app/services/api#

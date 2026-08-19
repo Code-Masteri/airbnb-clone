@@ -1,5 +1,0 @@
-New Terminal Output:
-
-root@302976b89dd7:/app# grep -n "ORDER BY priority" services/api/app.py
-76:                text("SELECT id, payload, status, priority FROM jobs WHERE status = :status ORDER BY priority DESC"),
-root@302976b89dd7:/app#

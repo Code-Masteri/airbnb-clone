@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@9f2243faa8bb:/app# sed -i 's/lpush("jobs"/lpush("job_queue"/g' /app/services/api/app.py
-root@9f2243faa8bb:/app#

@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@302976b89dd7:/app# redis-server --daemonize yes
-root@302976b89dd7:/app#
