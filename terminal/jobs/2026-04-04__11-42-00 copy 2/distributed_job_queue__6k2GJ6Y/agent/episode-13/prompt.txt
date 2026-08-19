@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@302976b89dd7:/app# cp services/worker/worker.py services/worker/worker.py.backup
-root@302976b89dd7:/app#
