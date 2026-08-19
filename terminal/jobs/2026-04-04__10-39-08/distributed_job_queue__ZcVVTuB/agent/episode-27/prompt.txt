@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@2ab9fbc9680a:/app/services/scheduler# sed -i "s/str(depth)/depth/" scheduler.py
-root@2ab9fbc9680a:/app/services/scheduler#
