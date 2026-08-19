@@ -1,8 +1,0 @@
-New Terminal Output:
-
-root@6f13ff8a8598:/app/services/api# grep -n 'DATABASE_URL\|queue:jobs\|ORDER BY priority DESC' app.py
-10:# Bug 1: wrong env var — should be DATABASE_URL
-11:engine = create_engine(os.environ.get("DATABASE_URL", "sqlite:////tmp/taskdb.sqlite"))
-54:    redis_client.lpush("queue:jobs", json.dumps({"id": job_id, "payload": data["payload"], "priority": priority}))
-76:                text("SELECT id, payload, status, priority FROM jobs WHERE status = :status ORDER BY priority DESC"),
-root@6f13ff8a8598:/app/services/api#
