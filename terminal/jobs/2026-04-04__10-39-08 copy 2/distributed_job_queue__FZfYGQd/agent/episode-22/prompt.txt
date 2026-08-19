@@ -1,7 +1,0 @@
-New Terminal Output:
-
-root@cadbccf866d5:/app/services# grep -n "priority.*i\|queue_depth.*depth" scheduler/scheduler.py
-14:            # Bug 5: priority is str not int
-15:            r = requests.post(f"{API_URL}/jobs", json={"payload": payload, "priority": i}, timeout=5)
-23:    redis_client.set("queue_depth", depth)
-root@cadbccf866d5:/app/services#
