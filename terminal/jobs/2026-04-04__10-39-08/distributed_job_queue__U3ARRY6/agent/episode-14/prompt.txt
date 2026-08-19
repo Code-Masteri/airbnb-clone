@@ -1,5 +1,0 @@
-New Terminal Output:
-
-root@97b23c1535ba:/app/services# cp worker/worker.py worker/worker.py.backup
-root@97b23c1535ba:/app/services# sed -i 's/status = .done./status = "completed"/' worker/worker.py
-root@97b23c1535ba:/app/services#
