@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@7d217dbb9a50:/app/services# cp scheduler/scheduler.py scheduler/scheduler.py.backup
-root@7d217dbb9a50:/app/services# sed -i 's/priority": str(i)/priority": int(i)/g' scheduler/scheduler.py
-root@7d217dbb9a50:/app/services# sed -i 's/redis_client.set(\"queue_depth\", str(depth))/redis_client.set(\"queue_depth\", int(depth))/g' scheduler/scheduler.py
-root@7d217dbb9a50:/app/services#
