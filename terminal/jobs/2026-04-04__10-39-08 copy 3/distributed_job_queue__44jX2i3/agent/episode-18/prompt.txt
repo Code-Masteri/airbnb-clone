@@ -1,9 +1,0 @@
-New Terminal Output:
-
-root@ce6728210b7c:/app/services# ls -la worker/
-total 20
-drwxr-xr-x 2 root root 4096 Apr  4 07:13 .
-drwxr-xr-x 1 root root 4096 Apr  3 21:53 ..
--rw-r--r-- 1 root root   55 Apr  3 21:53 requirements.txt
--rw-r--r-- 1 root root 1038 Apr  4 07:12 worker.py
-root@ce6728210b7c:/app/services#
