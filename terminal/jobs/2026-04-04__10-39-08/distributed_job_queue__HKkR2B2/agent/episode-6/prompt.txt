@@ -1,7 +1,0 @@
-New Terminal Output:
-
-root@163179c68d5b:/app# cat /app/services/worker/requirements.txt
-redis==5.0.1
-psycopg2-binary==2.9.9
-sqlalchemy==2.0.23
-root@163179c68d5b:/app#
