@@ -1,7 +1,0 @@
-New Terminal Output:
-
-Press CTRL+C to quit
-DATABASE_URL="sqlite:////tmp/taskdb.sqlite" REDIS_URL="redis://localhost:6379" python /app/services/worker/worker.py &
-[2] 646
-root@7d4d3310c2ec:/app/services# Worker listening on job_queue...
-
