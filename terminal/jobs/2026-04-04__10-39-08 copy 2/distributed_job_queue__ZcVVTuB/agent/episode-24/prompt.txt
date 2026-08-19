@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@2ab9fbc9680a:/app/services/worker# grep -E 'brpop.*jobs|status = .completed.' worker.py
-            text("UPDATE jobs SET status = 'completed', processed_at = datetime('now') WHERE id = :id"),
-            result = redis_client.brpop("jobs", timeout=5)
-root@2ab9fbc9680a:/app/services/worker#
