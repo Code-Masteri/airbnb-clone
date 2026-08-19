@@ -1,7 +1,0 @@
-New Terminal Output:
-
-root@6f13ff8a8598:/app/services/worker# grep -n 'queue:jobs\|completed' worker.py
-14:        # Bug 4: wrong status — should be 'completed'
-16:            text("UPDATE jobs SET status = 'completed', processed_at = datetime('now') WHERE id = :id"),
-26:            result = redis_client.brpop("queue:jobs", timeout=5)
-root@6f13ff8a8598:/app/services/worker#
