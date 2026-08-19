@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@cadbccf866d5:/app/services# cp scheduler/scheduler.py scheduler/scheduler.py.backup
-root@cadbccf866d5:/app/services#
