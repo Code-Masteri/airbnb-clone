@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@302976b89dd7:/app# sed -i 's/ORDER BY priority ASC/ORDER BY priority DESC/' services/api/app.py
-root@302976b89dd7:/app#
