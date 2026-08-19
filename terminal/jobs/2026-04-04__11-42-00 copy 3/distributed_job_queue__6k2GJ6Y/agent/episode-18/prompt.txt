@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@302976b89dd7:/app# grep -n "DATABASE_URL" services/api/app.py
-10:# Bug 1: wrong env var — should be DATABASE_URL
-11:engine = create_engine(os.environ.get("DATABASE_URL", "sqlite:////tmp/taskdb.sqlite"))
-root@302976b89dd7:/app#
