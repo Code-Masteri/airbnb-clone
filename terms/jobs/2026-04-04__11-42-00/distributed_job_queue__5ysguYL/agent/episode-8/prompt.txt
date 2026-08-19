@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@9f2243faa8bb:/app# Worker listening on job_queue...
-API_URL="http://localhost:8000" REDIS_URL="redis://localhost:6379" python /app/services/scheduler/scheduler.py &
-[3] 667
-root@9f2243faa8bb:/app#
