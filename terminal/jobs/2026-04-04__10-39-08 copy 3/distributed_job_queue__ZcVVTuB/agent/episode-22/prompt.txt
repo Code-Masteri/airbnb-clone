@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@2ab9fbc9680a:/app/services/worker# sed -i 's/brpop(\"job_queue\"/brpop(\"jobs\"/' worker.py
-root@2ab9fbc9680a:/app/services/worker#
