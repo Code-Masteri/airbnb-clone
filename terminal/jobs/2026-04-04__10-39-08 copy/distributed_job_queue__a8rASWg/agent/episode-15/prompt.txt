@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@c8832b20acb7:/app/services# grep -n "status = 'completed'" worker/worker.py
-16:            text("UPDATE jobs SET status = 'completed', processed_at = datetime('now') WHERE id = :id"),
-root@c8832b20acb7:/app/services# grep -n "priority: i\|str(depth)" scheduler/scheduler.py
-root@c8832b20acb7:/app/services#
