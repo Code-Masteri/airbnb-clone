@@ -1,390 +1,0 @@
-[?2004hroot@c8832b20acb7:/app# asciinema rec --stdin /logs/agent/recording.cast
-[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
-[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
-[?2004hroot@c8832b20acb7:/app# clear
-[?2004l[H[J[3J[?2004hroot@c8832b20acb7:/app# ls -la
-[?2004ltotal 12
-drwxr-xr-x 1 root root 4096 Apr  4 07:14 .
-drwxr-xr-x 1 root root 4096 Apr  4 07:55 ..
-drwxr-xr-x 5 root root 4096 Apr  3 21:53 services
-[?2004hroot@c8832b20acb7:/app# cd services
-[?2004l[?2004hroot@c8832b20acb7:/app/services# ls -la
-[?2004ltotal 20
-drwxr-xr-x 5 root root 4096 Apr  3 21:53 .
-drwxr-xr-x 1 root root 4096 Apr  4 07:14 ..
-drwxr-xr-x 2 root root 4096 Apr  4 07:13 api
-drwxr-xr-x 2 root root 4096 Apr  3 21:53 scheduler
-drwxr-xr-x 2 root root 4096 Apr  4 07:13 worker
-[?2004hroot@c8832b20acb7:/app/services# ls -la api/
-[?2004ltotal 16
-drwxr-xr-x 2 root root 4096 Apr  4 07:13 .
-drwxr-xr-x 5 root root 4096 Apr  3 21:53 ..
--rw-r--r-- 1 root root 3412 Apr  4 07:11 app.py
--rw-r--r-- 1 root root   68 Apr  3 21:53 requirements.txt
-[?2004hroot@c8832b20acb7:/app/services# cat api/app.py
-[?2004lfrom flask import Flask, jsonify, request
-from sqlalchemy import create_engine, text
-import redis
-import os
-import json
-import time
-
-app = Flask(__name__)
-
-# Bug 1: wrong env var — should be DATABASE_URL
-engine = create_engine(os.environ.get("DB_URL", "sqlite:////tmp/taskdb.sqlite"))
-redis_client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"))
-
-def init_db():
-    with engine.connect() as conn:
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS jobs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                payload TEXT NOT NULL,
-                status TEXT DEFAULT 'pending',
-                priority INTEGER DEFAULT 0,
-                created_at TEXT DEFAULT (datetime('now')),
-                processed_at TEXT
-            )
-        """))
-        conn.commit()
-
-@app.route("/health")
-def health():
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        redis_client.ping()
-        return jsonify({"status": "healthy", "db": "ok", "redis": "ok"})
-    except Exception as e:
-        return jsonify({"status": "unhealthy", "error": str(e)}), 500
-
-@app.route("/jobs", methods=["POST"])
-def create_job():
-    data = request.get_json()
-    if not data or "payload" not in data:
-        return jsonify({"error": "payload required"}), 400
-    priority = data.get("priority", 0)
-    if not isinstance(priority, int):
-        return jsonify({"error": "priority must be integer"}), 400
-    with engine.connect() as conn:
-        result = conn.execute(
-            text("INSERT INTO jobs (payload, priority) VALUES (:payload, :priority)"),
-            {"payload": data["payload"], "priority": priority}
-        )
-        conn.commit()
-        job_id = result.lastrowid
-    # Bug 2: wrong queue name
-    redis_client.lpush("jobs", json.dumps({"id": job_id, "payload": data["payload"], "priority": priority}))
-    return jsonify({"id": job_id, "status": "pending"}), 201
-
-@app.route("/jobs/<int:job_id>")
-def get_job(job_id):
-    with engine.connect() as conn:
-        result = conn.execute(
-            text("SELECT id, payload, status, priority, created_at FROM jobs WHERE id = :id"),
-            {"id": job_id}
-        )
-        row = result.fetchone()
-    if not row:
-        return jsonify({"error": "not found"}), 404
-    return jsonify({"id": row[0], "payload": row[1], "status": row[2], "priority": row[3], "created_at": str(row[4])})
-
-@app.route("/jobs")
-def list_jobs():
-    status = request.args.get("status")
-    with engine.connect() as conn:
-        if status:
-            # Bug 3: ASC should be DESC
-            result = conn.execute(
-                text("SELECT id, payload, status, priority FROM jobs WHERE status = :status ORDER BY priority ASC"),
-                {"status": status}
-            )
-        else:
-            result = conn.execute(text("SELECT id, payload, status, priority FROM jobs ORDER BY created_at DESC"))
-        rows = result.fetchall()
-    return jsonify([{"id": r[0], "payload": r[1], "status": r[2], "priority": r[3]} for r in rows])
-
-@app.route("/stats")
-def stats():
-    with engine.connect() as conn:
-        result = conn.execute(text("SELECT status, COUNT(*) FROM jobs GROUP BY status"))
-        rows = result.fetchall()
-    return jsonify({row[0]: row[1] for row in rows})
-
-if __name__ == "__main__":
-    init_db()
-    app.run(host="0.0.0.0", port=8000, debug=False)
-[?2004hroot@c8832b20acb7:/app/services# cat api/requirements.txt
-[?2004lflask==3.0.3
-psycopg2-binary==2.9.9
-redis==5.0.1
-sqlalchemy==2.0.23
-[?2004hroot@c8832b20acb7:/app/services# ls -la worker/
-[?2004ltotal 16
-drwxr-xr-x 2 root root 4096 Apr  4 07:13 .
-drwxr-xr-x 5 root root 4096 Apr  3 21:53 ..
--rw-r--r-- 1 root root   55 Apr  3 21:53 requirements.txt
--rw-r--r-- 1 root root 1038 Apr  4 07:12 worker.py
-[?2004hroot@c8832b20acb7:/app/services# cat worker/worker.py
-[?2004limport redis
-import json
-import os
-import time
-from sqlalchemy import create_engine, text
-
-redis_client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"))
-engine = create_engine(os.environ.get("DATABASE_URL", "sqlite:////tmp/taskdb.sqlite"))
-
-def process_job(job_data):
-    job_id = job_data["id"]
-    time.sleep(0.1)
-    with engine.connect() as conn:
-        # Bug 4: wrong status — should be 'completed'
-        conn.execute(
-            text("UPDATE jobs SET status = 'done', processed_at = datetime('now') WHERE id = :id"),
-            {"id": job_id}
-        )
-        conn.commit()
-    print(f"Job {job_id} processed")
-
-def main():
-    print("Worker listening on job_queue...")
-    while True:
-        try:
-            result = redis_client.brpop("job_queue", timeout=5)
-            if result:
-                _, data = result
-                process_job(json.loads(data))
-        except Exception as e:
-            print(f"Worker error: {e}")
-            time.sleep(1)
-
-if __name__ == "__main__":
-    main()
-[?2004hroot@c8832b20acb7:/app/services# cat worker/requirements.txt
-[?2004lredis==5.0.1
-psycopg2-binary==2.9.9
-sqlalchemy==2.0.23
-[?2004hroot@c8832b20acb7:/app/services# ls -la scheduler/
-[?2004ltotal 16
-drwxr-xr-x 2 root root 4096 Apr  3 21:53 .
-drwxr-xr-x 5 root root 4096 Apr  3 21:53 ..
--rw-r--r-- 1 root root   46 Apr  3 21:53 requirements.txt
--rw-r--r-- 1 root root 1110 Apr  3 21:53 scheduler.py
-[?2004hroot@c8832b20acb7:/app/services# cat scheduler/scheduler.py
-[?2004limport requests
-import redis
-import schedule
-import time
-import os
-
-API_URL = os.environ.get("API_URL", "http://localhost:8000")
-redis_client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"))
-
-def submit_scheduled_jobs():
-    payloads = ["health_check", "cleanup_old_records", "generate_report"]
-    for i, payload in enumerate(payloads):
-        try:
-            # Bug 5: priority is str not int
-            r = requests.post(f"{API_URL}/jobs", json={"payload": payload, "priority": str(i)}, timeout=5)
-            print(f"Scheduled {payload}: {r.status_code} {r.text}")
-        except Exception as e:
-            print(f"Scheduler error: {e}")
-
-def check_queue_depth():
-    depth = redis_client.llen("job_queue")
-    # Bug 6: stores as string — should be int
-    redis_client.set("queue_depth", str(depth))
-
-schedule.every(30).seconds.do(submit_scheduled_jobs)
-schedule.every(10).seconds.do(check_queue_depth)
-
-if __name__ == "__main__":
-    time.sleep(8)
-    print("Scheduler started")
-    submit_scheduled_jobs()
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-[?2004hroot@c8832b20acb7:/app/services# cat scheduler/requirements.txt
-[?2004lrequests==2.31.0
-redis==5.0.1
-schedule==1.2.1
-[?2004hroot@c8832b20acb7:/app/services# cp api/app.py api/app.py.backup
-[?2004l[?2004hroot@c8832b20acb7:/app/services# sed -i 's/DB_URL/DATABASE_URL/g' api/app.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# sed -i "s/lpush(\"jobs\"/lpush(\"job_queue\"/" api/app.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# sed -i 's/ASC/DESC/g' api/app.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# grep -n "DATABASE_URL\|job_queue\|DESC" api/app.py
-[?2004l10:# Bug 1: wrong env var — should be DATABASE_URL
-11:engine = create_engine(os.environ.get("DATABASE_URL", "sqlite:////tmp/taskdb.sqlite"))
-54:    redis_client.lpush("job_queue", json.dumps({"id": job_id, "payload": data["payload"], "priority": priority}))
-74:            # Bug 3: DESC should be DESC
-76:                text("SELECT id, payload, status, priority FROM jobs WHERE status = :status ORDER BY priority DESC"),
-80:            result = conn.execute(text("SELECT id, payload, status, priority FROM jobs ORDER BY created_at DESC"))
-[?2004hroot@c8832b20acb7:/app/services# cp worker/worker.py worker/worker.py.backup
-[?2004l[?2004hroot@c8832b20acb7:/app/services# sed -i "s/status = 'done'/status = 'completed'/" worker/worker.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# cp scheduler/scheduler.py scheduler/scheduler.py.backup
-[?2004l[?2004hroot@c8832b20acb7:/app/services# sed -i 's/priority: str(i)/priority: i/' scheduler/scheduler.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# sed -i 's/str(depth)/depth/' scheduler/scheduler.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# grep -n "status = 'completed'" worker/worker.py
-[?2004l16:            text("UPDATE jobs SET status = 'completed', processed_at = datetime('now') WHERE id = :id"),
-[?2004hroot@c8832b20acb7:/app/services# grep -n "priority: i\|str(depth)" scheduler/scheduler.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# grep -n "priority:" scheduler/scheduler.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# grep -n "redis_client.set" scheduler/scheduler.py
-[?2004l23:    redis_client.set("queue_depth", depth)
-[?2004hroot@c8832b20acb7:/app/services# grep -A5 -B5 "requests.post" scheduler/scheduler.py
-[?2004ldef submit_scheduled_jobs():
-    payloads = ["health_check", "cleanup_old_records", "generate_report"]
-    for i, payload in enumerate(payloads):
-        try:
-            # Bug 5: priority is str not int
-            r = requests.post(f"{API_URL}/jobs", json={"payload": payload, "priority": str(i)}, timeout=5)
-            print(f"Scheduled {payload}: {r.status_code} {r.text}")
-        except Exception as e:
-            print(f"Scheduler error: {e}")
-
-def check_queue_depth():
-[?2004hroot@c8832b20acb7:/app/services# cd api && pip install -r requirements.txt
-[?2004lRequirement already satisfied: flask==3.0.3 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (3.0.3)
-Requirement already satisfied: psycopg2-binary==2.9.9 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (2.9.9)
-Requirement already satisfied: redis==5.0.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (5.0.1)
-Requirement already satisfied: sqlalchemy==2.0.23 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (2.0.23)
-Requirement already satisfied: Werkzeug>=3.0.0 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (3.1.8)
-Requirement already satisfied: Jinja2>=3.1.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (3.1.6)
-Requirement already satisfied: itsdangerous>=2.1.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (2.2.0)
-Requirement already satisfied: click>=8.1.3 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (8.3.2)
-Requirement already satisfied: blinker>=1.6.2 in /usr/local/lib/python3.12/site-packages (from flask==3.0.3->-r requirements.txt (line 1)) (1.9.0)
-Requirement already satisfied: typing-extensions>=4.2.0 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 4)) (4.15.0)
-Requirement already satisfied: greenlet!=0.4.17 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 4)) (3.3.2)
-Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/site-packages (from Jinja2>=3.1.2->flask==3.0.3->-r requirements.txt (line 1)) (3.0.3)
-[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.[0m[33m
-[0m
-[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m25.0.1[0m[39;49m -> [0m[32;49m26.0.1[0m
-[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-[?2004hroot@c8832b20acb7:/app/services/api# cd /app/services
-[?2004l[?2004hroot@c8832b20acb7:/app/services# sed -i 's/priority: str(i)/priority: i/' scheduler/scheduler.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# grep -n "priority:" scheduler/scheduler.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# grep -A3 -B3 "json={" scheduler/scheduler.py
-[?2004l    for i, payload in enumerate(payloads):
-        try:
-            # Bug 5: priority is str not int
-            r = requests.post(f"{API_URL}/jobs", json={"payload": payload, "priority": str(i)}, timeout=5)
-            print(f"Scheduled {payload}: {r.status_code} {r.text}")
-        except Exception as e:
-            print(f"Scheduler error: {e}")
-[?2004hroot@c8832b20acb7:/app/services# sed -i 's/"priority": str(i)/"priority": i/' scheduler/scheduler.py
-[?2004l[?2004hroot@c8832b20acb7:/app/services# grep -A2 -B2 "priority" scheduler/scheduler.py
-[?2004l    for i, payload in enumerate(payloads):
-        try:
-            # Bug 5: priority is str not int
-            r = requests.post(f"{API_URL}/jobs", json={"payload": payload, "priority": i}, timeout=5)
-            print(f"Scheduled {payload}: {r.status_code} {r.text}")
-        except Exception as e:
-[?2004hroot@c8832b20acb7:/app/services# cd worker && pip install -r requirements.txt
-[?2004lRequirement already satisfied: redis==5.0.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (5.0.1)
-Requirement already satisfied: psycopg2-binary==2.9.9 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (2.9.9)
-Requirement already satisfied: sqlalchemy==2.0.23 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (2.0.23)
-Requirement already satisfied: typing-extensions>=4.2.0 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 3)) (4.15.0)
-Requirement already satisfied: greenlet!=0.4.17 in /usr/local/lib/python3.12/site-packages (from sqlalchemy==2.0.23->-r requirements.txt (line 3)) (3.3.2)
-[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.[0m[33m
-[0m
-[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m25.0.1[0m[39;49m -> [0m[32;49m26.0.1[0m
-[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-[?2004hroot@c8832b20acb7:/app/services/worker# cd /app/services/scheduler && pip install -r requirements.txt
-[?2004lRequirement already satisfied: requests==2.31.0 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (2.31.0)
-Requirement already satisfied: redis==5.0.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (5.0.1)
-Requirement already satisfied: schedule==1.2.1 in /usr/local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (1.2.1)
-Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.12/site-packages (from requests==2.31.0->-r requirements.txt (line 1)) (3.4.7)
-Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.12/site-packages (from requests==2.31.0->-r requirements.txt (line 1)) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.12/site-packages (from requests==2.31.0->-r requirements.txt (line 1)) (2.6.3)
-Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.12/site-packages (from requests==2.31.0->-r requirements.txt (line 1)) (2026.2.25)
-[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.[0m[33m
-[0m
-[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m25.0.1[0m[39;49m -> [0m[32;49m26.0.1[0m
-[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-[?2004hroot@c8832b20acb7:/app/services/scheduler# cd /app/services
-[?2004l[?2004hroot@c8832b20acb7:/app/services# pg_isready -h localhost -p 5432
-[?2004lbash: pg_isready: command not found
-[?2004hroot@c8832b20acb7:/app/services# redis-cli ping
-[?2004lCould not connect to Redis at 127.0.0.1:6379: Connection refused
-[?2004hroot@c8832b20acb7:/app/services# which postgres
-[?2004l[?2004hroot@c8832b20acb7:/app/services# which redis-server
-[?2004l/usr/bin/redis-server
-[?2004hroot@c8832b20acb7:/app/services# apt update && apt install -y postgresql postgresql-contrib redis-server
-[?2004l[33m0% [Working][0m            Hit:1 http://deb.debian.org/debian trixie InRelease
-[33m0% [Working][0m[33m0% [Waiting for headers][0m                        Hit:2 http://deb.debian.org/debian trixie-updates InRelease
-[33m                        0% [Working][0m[33m0% [Waiting for headers][0m                        Hit:3 http://deb.debian.org/debian-security trixie-security InRelease
-[33m                        0% [Working][0m[33m20% [Working][0m             Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 98%Reading package lists... 98%Reading package lists... 98%Reading package lists... 98%Reading package lists... 99%Reading package lists... 99%                             Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%                                Reading state information... 0%Reading state information... 0%                                All packages are up to date.
-Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 98%Reading package lists... 98%Reading package lists... 98%Reading package lists... 98%Reading package lists... 99%Reading package lists... 99%                             Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... 52%                                Reading state information... 0%Reading state information... 0%                                Note, selecting 'postgresql' instead of 'postgresql-contrib'
-redis-server is already the newest version (5:8.0.2-3+deb13u1).
-Installing:
-[32m  postgresql
-[0m
-Installing dependencies:
-[32m  bsd-mailx                libapparmor1            libgpg-error0    libpopt0                  libxslt1.1                psmisc
-  cron                     libc-l10n               libicu76         libpq5                    libz3-4                   sensible-utils
-  cron-daemon-common       libcommon-sense-perl    libidn12         libproc2-0                linux-sysctl-defaults     ssl-cert
-  dbus                     libcryptsetup12         libio-pty-perl   libsensors-config         locales                   sysstat
-  dbus-bin                 libdbus-1-3             libipc-run-perl  libsensors5               logrotate                 systemd
-  dbus-daemon              libdevmapper1.02.1      libjson-c5       libss2                    logsave                   systemd-cryptsetup
-  dbus-session-bus-common  libedit2                libjson-perl     libsystemd-shared         perl                      systemd-timesyncd
-  dbus-system-bus-common   libevent-2.1-7t64       libjson-xs-perl  libtext-charwidth-perl    perl-modules-5.40         ucf
-  dmsetup                  libext2fs2t64           libkmod2         libtext-wrapi18n-perl     postgresql-17             xz-utils
-  e2fsprogs                libfile-fcntllock-perl  libllvm19        libtirpc-common           postgresql-client-17
-  e2fsprogs-l10n           libgcrypt20             liblockfile-bin  libtirpc3t64              postgresql-client-common
-  exim4-base               libgdbm-compat4t64      liblockfile1     libtypes-serialiser-perl  postgresql-common
-  exim4-config             libgnutls-dane0t64      libnsl2          libunbound8               postgresql-common-dev
-  exim4-daemon-light       libgpg-error-l10n       libperl5.40      libxml2                   procps
-[0m
-Suggested packages:
-  anacron                   parted            file            libdw1t64       perl-doc                      isag               libtss2-tcti-device0
-  checksecurity             fuse2fs           spf-tools-perl  libelf1t64      libterm-readline-gnu-perl     systemd-container  polkitd
-  supercat                  e2fsck-static     swaks           libfido2-1      | libterm-readline-perl-perl  systemd-homed
-  bat                       libarchive13t64   rng-tools       libip4tc2       make                          systemd-userdbd
-  default-dbus-session-bus  exim4-doc-html    dns-root-data   libpwquality1   libtap-harness-archive-perl   systemd-boot
-  | dbus-session-bus        | exim4-doc-info  lm-sensors      libqrencode4    postgresql-doc                systemd-resolved
-  gpart                     eximon4           libbpf1         libtss2-rc0t64  postgresql-doc-17             systemd-repart
-
-Summary:
-  Upgrading: 0, Installing: 80, Removing: 0, Not Upgrading: 0
-  Download size: 87.1 MB
-  Space needed: 395 MB / 443 GB available
-
-[33m0% [Working][0m            Get:1 http://deb.debian.org/debian trixie/main arm64 libsystemd-shared arm64 257.9-1~deb13u1 [1920 kB]
-[33m0% [1 libsystemd-shared 1368 B/1920 kB 0%][0m[33m0% [1 libsystemd-shared 97.1 kB/1920 kB 5%][0m[33m0% [1 libsystemd-shared 215 kB/1920 kB 11%][0m[33m0% [1 libsystemd-shared 332 kB/1920 kB 17%][0m[33m0% [1 libsystemd-shared 415 kB/1920 kB 22%][0m[33m0% [1 libsystemd-shared 518 kB/1920 kB 27%][0m[33m1% [1 libsystemd-shared 624 kB/1920 kB 32%][0m[33m1% [1 libsystemd-shared 729 kB/1920 kB 38%][0m[33m1% [1 libsystemd-shared 876 kB/1920 kB 46%][0m[33m1% [1 libsystemd-shared 993 kB/1920 kB 52%][0m[33m1% [1 libsystemd-shared 1118 kB/1920 kB 58%][0m[33m1% [1 libsystemd-shared 1249 kB/1920 kB 65%][0m[33m1% [1 libsystemd-shared 1379 kB/1920 kB 72%]                                                                                                  212 kB/s 6min 43s[0m[33m1% [1 libsystemd-shared 1513 kB/1920 kB 79%]                                                                                                  212 kB/s 6min 43s[0m[33m2% [1 libsystemd-shared 1637 kB/1920 kB 85%]                                                                                                  212 kB/s 6min 42s[0m[33m2% [1 libsystemd-shared 1772 kB/1920 kB 92%]                                                                                                  212 kB/s 6min 41s[0m[33m2% [1 libsystemd-shared 1918 kB/1920 kB 100%]                                                                                                 212 kB/s 6min 41s[0m[33m2% [Working]                                                                                                                                  212 kB/s 6min 41s[0m                                                                                                                                                               Get:2 http://deb.debian.org/debian trixie/main arm64 libapparmor1 arm64 4.1.0-1 [42.9 kB]
-[33m2% [2 libapparmor1 1823 B/42.9 kB 4%]                                                                                                         212 kB/s 6min 41s[0m[33m2% [Waiting for headers]                                                                                                                      212 kB/s 6min 40s[0m                                                                                                                                                               Get:3 http://deb.debian.org/debian trixie/main arm64 systemd arm64 257.9-1~deb13u1 [2927 kB]
-[33m2% [3 systemd 599 B/2927 kB 0%]                                                                                                               212 kB/s 6min 40s[0m[33m2% [3 systemd 76.3 kB/2927 kB 3%]                                                                                                             212 kB/s 6min 40s[0m[33m2% [3 systemd 180 kB/2927 kB 6%]                                                                                                              212 kB/s 6min 40s[0m[33m3% [3 systemd 301 kB/2927 kB 10%]                                                                                                             212 kB/s 6min 39s[0m[33m3% [3 systemd 355 kB/2927 kB 12%]                                                                                                             212 kB/s 6min 39s[0m[33m3% [3 systemd 409 kB/2927 kB 14%]                                                                                                             212 kB/s 6min 38s[0m[33m3% [3 systemd 517 kB/2927 kB 18%]                                                                                                             212 kB/s 6min 38s[0m[33m3% [3 systemd 667 kB/2927 kB 23%]                                                                                                             195 kB/s 7min 14s[0m[33m3% [3 systemd 796 kB/2927 kB 27%]                                                                                                             195 kB/s 7min 13s[0m[33m3% [3 systemd 942 kB/2927 kB 32%]                                                                                                             195 kB/s 7min 12s[0m[33m3% [3 systemd 1089 kB/2927 kB 37%]                                                                                                            195 kB/s 7min 11s[0m[33m3% [3 systemd 1180 kB/2927 kB 40%]                                                                                                            195 kB/s 7min 11s[0m[33m3% [3 systemd 1305 kB/2927 kB 45%]                                                                                                            195 kB/s 7min 10s[0m[33m4% [3 systemd 1439 kB/2927 kB 49%]                                                                                                            195 kB/s 7min 10s[0m[33m4% [3 systemd 1610 kB/2927 kB 55%]                                                                                                             195 kB/s 7min 9s[0m[33m4% [3 systemd 1758 kB/2927 kB 60%]                                                                                                             195 kB/s 7min 8s[0m[33m4% [3 systemd 1886 kB/2927 kB 64%]                                                                                                             195 kB/s 7min 7s[0m[33m4% [3 systemd 2048 kB/2927 kB 70%]                                                                                                             195 kB/s 7min 6s[0m[33m4% [3 systemd 2249 kB/2927 kB 77%]                                                                                                             195 kB/s 7min 5s[0m[33m5% [3 systemd 2427 kB/2927 kB 83%]                                                                                                            290 kB/s 4min 45s[0m[33m5% [3 systemd 2637 kB/2927 kB 90%]                                                                                                            290 kB/s 4min 44s[0m[33m5% [3 systemd 2785 kB/2927 kB 95%]                                                                                                            290 kB/s 4min 44s[0m[33m5% [Waiting for headers]                                                                                                                      290 kB/s 4min 43s[0m                                                                                                                                                               Get:4 http://deb.debian.org/debian trixie/main arm64 cron-daemon-common all 3.0pl1-197 [17.8 kB]
-[33m5% [4 cron-daemon-common 17.8 kB/17.8 kB 100%]                                                                                                290 kB/s 4min 43s[0m[33m6% [Waiting for headers]                                                                                                                      290 kB/s 4min 43s[0m                                                                                                                                                               Get:5 http://deb.debian.org/debian trixie/main arm64 sensible-utils all 0.0.25 [25.0 kB]
-[33m6% [5 sensible-utils 12.3 kB/25.0 kB 49%]                                                                                                     290 kB/s 4min 43s[0m[33m6% [Waiting for headers]                                                                                                                      290 kB/s 4min 43s[0m                                                                                                                                                               Get:6 http://deb.debian.org/debian trixie/main arm64 cron arm64 3.0pl1-197 [85.1 kB]
-[33m6% [6 cron 20.5 kB/85.1 kB 24%]                                                                                                               290 kB/s 4min 43s[0m[33m6% [Waiting for headers]                                                                                                                      290 kB/s 4min 43s[0m                                                                                                                                                               Get:7 http://deb.debian.org/debian trixie/main arm64 libext2fs2t64 arm64 1.47.2-3+b10 [205 kB]
-[33m6% [7 libext2fs2t64 12.3 kB/205 kB 6%]                                                                                                        290 kB/s 4min 43s[0m[33m6% [7 libext2fs2t64 196 kB/205 kB 95%]                                                                                                        290 kB/s 4min 42s[0m                                                                                                                                                               Get:8 http://deb.debian.org/debian trixie/main arm64 libss2 arm64 1.47.2-3+b10 [29.4 kB]
-[33m7% [8 libss2 29.4 kB/29.4 kB 100%]                                                                                                            290 kB/s 4min 42s[0m[33m7% [Waiting for headers]                                                                                                                      290 kB/s 4min 42s[0m                                                                                                                                                               Get:9 http://deb.debian.org/debian trixie/main arm64 logsave arm64 1.47.2-3+b10 [24.8 kB]
-[33m7% [9 logsave 13.8 kB/24.8 kB 56%]                                                                                                            290 kB/s 4min 42s[0m                                                                                                                                                               Get:10 http://deb.debian.org/debian trixie/main arm64 e2fsprogs arm64 1.47.2-3+b10 [566 kB]
-[33m7% [10 e2fsprogs 68.3 kB/566 kB 12%]                                                                                                          290 kB/s 4min 42s[0m[33m7% [10 e2fsprogs 211 kB/566 kB 37%]                                                                                                           290 kB/s 4min 41s[0m[33m8% [10 e2fsprogs 454 kB/566 kB 80%]                                                                                                           290 kB/s 4min 41s[0m[33m8% [Waiting for headers]                                                                                                                      290 kB/s 4min 40s[0m                                                                                                                                                               Get:11 http://deb.debian.org/debian trixie/main arm64 libdbus-1-3 arm64 1.16.2-2 [169 kB]
-[33m8% [11 libdbus-1-3 0 B/169 kB 0%]                                                                                                             290 kB/s 4min 40s[0m[33m8% [11 libdbus-1-3 0 B/169 kB 0%]                                                                                                             290 kB/s 4min 40s[0m[33m8% [11 libdbus-1-3 102 kB/169 kB 60%]                                                                                                         290 kB/s 4min 40s[0m[33m8% [Waiting for headers]                                                                                                                      290 kB/s 4min 40s[0m                                                                                                                                                               Get:12 http://deb.debian.org/debian trixie/main arm64 dbus-bin arm64 1.16.2-2 [78.8 kB]
-[33m8% [12 dbus-bin 0 B/78.8 kB 0%]                                                                                                               290 kB/s 4min 40s[0m[33m8% [12 dbus-bin 28.7 kB/78.8 kB 36%]                                                                                                           268 kB/s 5min 3s[0m[33m9% [Waiting for headers]                                                                                                                       268 kB/s 5min 2s[0m                                                                                                                                                               Get:13 http://deb.debian.org/debian trixie/main arm64 dbus-session-bus-common all 1.16.2-2 [52.3 kB]
-[33m9% [13 dbus-session-bus-common 629 B/52.3 kB 1%]                                                                                               268 kB/s 5min 2s[0m[33m9% [Waiting for headers]                                                                                                                       268 kB/s 5min 2s[0m                                                                                                                                                               Get:14 http://deb.debian.org/debian trixie/main arm64 dbus-daemon arm64 1.16.2-2 [152 kB]
-[33m9% [14 dbus-daemon 0 B/152 kB 0%]                                                                                                              268 kB/s 5min 2s[0m[33m9% [14 dbus-daemon 0 B/152 kB 0%]                                                                                                              268 kB/s 5min 2s[0m[33m9% [14 dbus-daemon 0 B/152 kB 0%]                                                                                                              268 kB/s 5min 2s[0m[33m9% [14 dbus-daemon 67.0 kB/152 kB 44%]                                                                                                         268 kB/s 5min 2s[0m[33m9% [Waiting for headers]                                                                                                                       268 kB/s 5min 2s[0m                                                                                                                                                               Get:15 http://deb.debian.org/debian trixie/main arm64 dbus-system-bus-common all 1.16.2-2 [53.5 kB]
-[33m9% [15 dbus-system-bus-common 0 B/53.5 kB 0%]                                                                                                  268 kB/s 5min 2s[0m[33m9% [15 dbus-system-bus-common 444 B/53.5 kB 1%]                                                                                                268 kB/s 5min 2s[0m[33m9% [15 dbus-system-bus-common 444 B/53.5 kB 1%]                                                                                                268 kB/s 5min 2s[0m[33m9% [15 dbus-system-bus-common 22.3 kB/53.5 kB 42%]                                                                                             268 kB/s 5min 2s[0m[33m10% [Waiting for headers]                                                                                                                      268 kB/s 5min 2s[0m                                                                                                                                                               Get:16 http://deb.debian.org/debian trixie/main arm64 dbus arm64 1.16.2-2 [70.7 kB]
-[33m10% [16 dbus 0 B/70.7 kB 0%]                                                                                                                   268 kB/s 5min 2s[0m[33m10% [16 dbus 21.9 kB/70.7 kB 31%]                                                                                                              268 kB/s 5min 1s[0m[33m10% [16 dbus 21.9 kB/70.7 kB 31%]                                                                                                           52.9 kB/s 25min 27s[0m[33m10% [16 dbus 31.5 kB/70.7 kB 45%]                                                                                                           52.9 kB/s 25min 26s[0m[33m10% [16 dbus 47.9 kB/70.7 kB 68%]                                                                                                           52.9 kB/s 25min 26s[0m[33m10% [Waiting for headers]                                                                                                                   52.9 kB/s 25min 26s[0m                                                                                                                                                               Get:17 http://deb.debian.org/debian trixie/main arm64 perl-modules-5.40 all 5.40.1-6 [3019 kB]
-[33m10% [17 perl-modules-5.40 0 B/3019 kB 0%]                                                                                                   52.9 kB/s 25min 26s[0m[33m10% [17 perl-modules-5.40 46.5 kB/3019 kB 2%]                                                                                               52.9 kB/s 25min 25s[0m[33m10% [17 perl-modules-5.40 126 kB/3019 kB 4%]                                                                                                52.9 kB/s 25min 23s[0m[33m10% [17 perl-modules-5.40 227 kB/3019 kB 8%]                                                                                                52.9 kB/s 25min 21s[0m[33m10% [17 perl-modules-5.40 342 kB/3019 kB 11%]                                                                                               52.9 kB/s 25min 19s[0m[33m10% [17 perl-modules-5.40 436 kB/3019 kB 14%]                                                                                               52.9 kB/s 25min 17s[0m[33m10% [17 perl-modules-5.40 540 kB/3019 kB 18%]                                                                                               52.9 kB/s 25min 16s[0m[33m10% [17 perl-modules-5.40 632 kB/3019 kB 21%]                                                                                               52.9 kB/s 25min 14s[0m[33m11% [17 perl-modules-5.40 744 kB/3019 kB 25%]                                                                                               52.9 kB/s 25min 12s[0m[33m11% [17 perl-modules-5.40 869 kB/3019 kB 29%]                                                                                                 148 kB/s 8min 59s[0m[33m11% [17 perl-modules-5.40 1027 kB/3019 kB 34%]                                                                                                148 kB/s 8min 58s[0m[33m11% [17 perl-modules-5.40 1209 kB/3019 kB 40%]                                                                                                148 kB/s 8min 57s[0m[33m11% [17 perl-modules-5.40 1390 kB/3019 kB 46%]                                                                                                148 kB/s 8min 55s[0m[33m11% [17 perl-modules-5.40 1591 kB/3019 kB 53%]                                                                                                148 kB/s 8min 54s[0m[33m12% [17 perl-modules-5.40 1770 kB/3019 kB 59%]                                                                                                148 kB/s 8min 53s[0m[33m12% [17 perl-modules-5.40 1929 kB/3019 kB 64%]                                                                                                148 kB/s 8min 52s[0m[33m12% [17 perl-modules-5.40 2138 kB/3019 kB 71%]                                                                                                148 kB/s 8min 50s[0m[33m12% [17 perl-modules-5.40 2364 kB/3019 kB 78%]                                                                                                148 kB/s 8min 49s[0m[33m12% [17 perl-modules-5.40 2587 kB/3019 kB 86%]                                                                                                148 kB/s 8min 47s[0m[33m12% [17 perl-modules-5.40 2807 kB/3019 kB 93%]                                                                                                148 kB/s 8min 46s[0m[33m13% [Working]                                                                                                                                 148 kB/s 8min 44s[0m                                                                                                                                                               Get:18 http://deb.debian.org/debian trixie/main arm64 libgdbm-compat4t64 arm64 1.24-2 [50.3 kB]
-[33m13% [18 libgdbm-compat4t64 10.1 kB/50.3 kB 20%]                                                                                               148 kB/s 8min 44s[0m[33m13% [Waiting for headers]                                                                                                                     148 kB/s 8min 44s[0m                                                                                                                                                               Get:19 http://deb.debian.org/debian trixie/main arm64 libperl5.40 arm64 5.40.1-6 [4142 kB]
-[33m13% [19 libperl5.40 16.4 kB/4142 kB 0%]                                                                                                       148 kB/s 8min 44s[0m[33m13% [19 libperl5.40 259 kB/4142 kB 6%]                                                                                                        384 kB/s 3min 21s[0m[33m14% [19 libperl5.40 505 kB/4142 kB 12%]                                                                                                       384 kB/s 3min 21s[0m[33m14% [19 libperl5.40 731 kB/4142 kB 18%]                                                                                                       384 kB/s 3min 20s[0m[33m14% [19 libperl5.40 1026 kB/4142 kB 25%]                                                                                                      384 kB/s 3min 19s[0m[33m14% [19 libperl5.40 1264 kB/4142 kB 31%]                                                                                                      384 kB/s 3min 19s[0m[33m15% [19 libperl5.40 1549 kB/4142 kB 37%]                                                                                                      384 kB/s 3min 18s[0m[33m15% [19 libperl5.40 1833 kB/4142 kB 44%]                                                                                                      384 kB/s 3min 17s[0m[33m15% [19 libperl5.40 2108 kB/4142 kB 51%]                                                                                                      384 kB/s 3min 16s[0m[33m15% [19 libperl5.40 2410 kB/4142 kB 58%]                                                                                                      384 kB/s 3min 16s[0m[33m16% [19 libperl5.40 2710 kB/4142 kB 65%]                                                                                                      384 kB/s 3min 15s[0m[33m16% [19 libperl5.40 3004 kB/4142 kB 73%]                                                                                                      384 kB/s 3min 14s[0m[33m16% [19 libperl5.40 3320 kB/4142 kB 80%]                                                                                                      384 kB/s 3min 13s[0m[33m16% [19 libperl5.40 3564 kB/4142 kB 86%]                                                                                                      545 kB/s 2min 16s[0m[33m17% [19 libperl5.40 3845 kB/4142 kB 93%]                                                                                                      545 kB/s 2min 15s[0m[33m17% [19 libperl5.40 3850 kB/4142 kB 93%]                                                                                                      545 kB/s 2min 15s[0m[33m17% [19 libperl5.40 3850 kB/4142 kB 93%]                                                                                                      545 kB/s 2min 15s[0m[33m17% [19 libperl5.40 3850 kB/4142 kB 93%]                                                                                                      545 kB/s 2min 15s[0m[33m17% [Waiting for headers]                                                                                                                     545 kB/s 2min 14s[0m                                                                                                                                                               Get:20 http://deb.debian.org/debian trixie/main arm64 perl arm64 5.40.1-6 [267 kB]
-[33m17% [20 perl 54.0 kB/267 kB 20%]                                                                                                              545 kB/s 2min 14s[0m[33m18% [Waiting for headers]                                                                                                                     545 kB/s 2min 14s[0m                                                                                                                                                               Get:21 http://deb.debian.org/debian trixie/main arm64 libjson-perl all 4.10000-1 [87.5 kB]
-[33m18% [21 libjson-perl 0 B/87.5 kB 0%]                                                                                                          545 kB/s 2min 14s[0m[33m18% [Waiting for headers]                                                                                                                     545 kB/s 2min 14s[0m                                                                                                                                                               Get:22 http://deb.debian.org/debian trixie/main arm64 postgresql-client-common all 278 [47.1 kB]
-[33m18% [22 postgresql-client-common 47.1 kB/47.1 kB 100%]                                                                                        545 kB/s 2min 14s[0m                                                                                                                                                               Get:23 http://deb.debian.org/debian trixie/main arm64 libio-pty-perl arm64 1:1.20-1+b3 [34.0 kB]
-[33m19% [Waiting for headers]                                                                                                                     545 kB/s 2min 14s[0m                                                                                                                                                               Get:24 http://deb.debian.org/debian trixie/main arm64 libipc-run-perl all 20231003.0-2 [101 kB]
-[33m19% [24 libipc-run-perl 20.5 kB/101 kB 20%]                                                                                                   545 kB/s 2min 14s[0m                                                                                                                                                               Get:25 http://deb.debian.org/debian trixie/main arm64 postgresql-common-dev all 278 [72.4 kB]
-[33m19% [25 postgresql-common-dev 72.4 kB/72.4 kB 100%]                                                                                           545 kB/s 2min 13s[0m                                                                                                                                                               Get:26 http://deb.debian.org/debian trixie/main arm64 ssl-cert all 1.1.3 [16.8 kB]
-                                                                                                                                                               Get:27 http://deb.debian.org/debian trixie/main arm64 libtext-charwidth-perl arm64 0.04-11+b4 [9652 B]
-[33m20% [27 libtext-charwidth-perl 4096 B/9652 B 42%]                                                                                             545 kB/s 2min 13s[0m[33m20% [Waiting for headers]                                                                                                                     545 kB/s 2min 13s[0m                                                                                                                                                               Get:28 http://deb.debian.org/debian trixie/main arm64 libtext-wrapi18n-perl all 0.06-10 [8808 B]
-[33m20% [Waiting for headers]                                                                                                                     545 kB/s 2min 13s[0m                                                                                                                                                               Get:29 http://deb.debian.org/debian trixie/main arm64 libproc2-0 arm64 2:4.0.4-9 [62.8 kB]
-[33m20% [29 libproc2-0 20.5 kB/62.8 kB 33%]                                                                                                       545 kB/s 2min 13s[0m[33m20% [Waiting for headers]                                                                                                                     545 kB/s 2min 13s[0m                                                                                                                                                               Get:30 http://deb.debian.org/debian trixie/main arm64 procps arm64 2:4.0.4-9 [871 kB]
-[33m20% [30 procps 0 B/871 kB 0%]                                                                                                                 545 kB/s 2min 13s[0m[33m20% [30 procps 0 B/871 kB 0%]                                                                                                                 545 kB/s 2min 13s[0m[33m20% [30 procps 0 B/871 kB 0%]                                                                                                                 545 kB/s 2min 13s[0m[33m20% [30 procps 1368 B/871 kB 0%]                                                                                                              545 kB/s 2min 13s[0m[33m20% [30 procps 5472 B/871 kB 1%]                                                                                                              545 kB/s 2min 13s[0m[33m20% [30 procps 16.4 kB/871 kB 2%]                                                                                                             545 kB/s 2min 13s[0m[33m20% [30 procps 34.2 kB/871 kB 4%]                                                                                                             545 kB/s 2min 13s[0m[33m20% [30 procps 56.1 kB/871 kB 6%]                                                                                                             207 kB/s 5min 51s[0m[33m20% [30 procps 84.8 kB/871 kB 10%]                                                                                                            207 kB/s 5min 51s[0m[33m21% [30 procps 126 kB/871 kB 14%]                                                                                                             207 kB/s 5min 51s[0m[33m21% [30 procps 174 kB/871 kB 20%]                                                                                                             207 kB/s 5min 51s[0m[33m21% [30 procps 234 kB/871 kB 27%]                                                                                                             207 kB/s 5min 50s[0m[33m21% [30 procps 320 kB/871 kB 37%]                                                                                                             207 kB/s 5min 50s[0m[33m21% [30 procps 421 kB/871 kB 48%]                                                                                                             207 kB/s 5min 50s[0m[33m21% [30 procps 549 kB/871 kB 63%]                                                                                                             207 kB/s 5min 49s[0m[33m21% [30 procps 751 kB/871 kB 86%]                                                                                                             207 kB/s 5min 48s[0m[33m21% [Waiting for headers]                                                                                                                     207 kB/s 5min 47s[0m                                                                                                                                                               Get:31 http://deb.debian.org/debian trixie/main arm64 ucf all 3.0052 [43.3 kB]
-[33m21% [31 ucf 752 B/43.3 kB 2%]                                                                                                                 207 kB/s 5min 47s[0m[33m22% [Waiting for headers]                                                                                                                     207 kB/s 5min 47s[0m                                                                                                                                                               Get:32 http://deb.debian.org/debian trixie/main arm64 postgresql-common all 278 [112 kB]
-[33m22% [32 postgresql-common 467 B/112 kB 0%]                                                                                                    207 kB/s 5min 47s[0m[33m22% [Waiting for headers]                                                                                                                     207 kB/s 5min 47s[0m                                                                                                                                                               Get:33 http://deb.debian.org/debian trixie/main arm64 linux-sysctl-defaults all 4.12.1 [5724 B]
-[33m22% [33 linux-sysctl-defaults 1220 B/5724 B 21%]                                                                                              207 kB/s 5min 47s[0m[33m22% [Waiting for headers]                                                                                                                     207 kB/s 5min 47s[0m                                                                                                                                                               Get:34 http://deb.debian.org/debian trixie/main arm64 libpopt0 arm64 1.19+dfsg-2 [42.8 kB]
-[33m22% [34 libpopt0 605 B/42.8 kB 1%]                                                                                                            207 kB/s 5min 47s[0m[33m22% [34 libpopt0 14.2 kB/42.8 kB 33%]                                                                                                         207 kB/s 5min 47s[0m[33m23% [Waiting for headers]                                                                                                                     207 kB/s 5min 46s[0m                                                                                                                                                               Get:35 http://deb.debian.org/debian trixie/main arm64 logrotate arm64 3.22.0-1+b2 [58.9 kB]
-[33m23% [35 logrotate 608 B/58.9 kB 1%]                                                                                                           207 kB/s 5min 46s[0m[33m23% [35 logrotate 608 B/58.9 kB 1%]                                                                                                           158 kB/s 7min 35s[0m[33m23% [35 logrotate 36.2 kB/58.9 kB 61%]                                                                                                        158 kB/s 7min 34s[0m[33m23% [Working]                                                                                                                                 158 kB/s 7min 34s[0m                                                                                                                                                               Get:36 http://deb.debian.org/debian trixie/main arm64 libc-l10n all 2.41-12+deb13u2 [740 kB]
-[33m23% [36 libc-l10n 1368 B/740 kB 0%]                                                                                                           158 kB/s 7min 34s[0m
