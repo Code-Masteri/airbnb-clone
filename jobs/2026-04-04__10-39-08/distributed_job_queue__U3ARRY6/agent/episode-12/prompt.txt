@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@97b23c1535ba:/app/services# sed -i 's/DB_URL/DATABASE_URL/' api/app.py
-root@97b23c1535ba:/app/services# sed -i 's/lpush("jobs"/lpush("job_queue"/' api/app.py
-root@97b23c1535ba:/app/services# sed -i 's/ORDER BY priority ASC/ORDER BY priority DESC/' api/app.py
-root@97b23c1535ba:/app/services#
