@@ -1,6 +1,0 @@
-New Terminal Output:
-
-root@c8832b20acb7:/app/services# grep -n "priority:" scheduler/scheduler.py
-root@c8832b20acb7:/app/services# grep -n "redis_client.set" scheduler/scheduler.py
-23:    redis_client.set("queue_depth", depth)
-root@c8832b20acb7:/app/services#

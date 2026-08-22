@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@3468d52e6b7f:/app# sed -i 's/DB_URL/DATABASE_URL/g' services/api/app.py
-root@3468d52e6b7f:/app#

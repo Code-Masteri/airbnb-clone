@@ -1,4 +1,0 @@
-New Terminal Output:
-
-root@2ab9fbc9680a:/app/services/worker# cd ../scheduler
-root@2ab9fbc9680a:/app/services/scheduler#
